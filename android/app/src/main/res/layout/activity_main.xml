@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main_sky_view_root"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:theme="@android:style/Theme.Black">
+    <com.github.brianon99.dokidoki.view.JoystickView
+        xmlns:custom="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/joystick"
+        android:layout_marginLeft="14dp"
+        android:layout_marginRight="14dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        custom:JV_buttonColor="#C0C0C0"
+        custom:JV_buttonSizeRatio="20%"
+        custom:JV_borderColor="#A0A0A0"
+        custom:JV_backgroundColor="#101010"
+        custom:JV_borderWidth="4dp"
+        custom:JV_fixedCenter="false"/>
+</RelativeLayout>

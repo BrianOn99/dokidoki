@@ -12,7 +12,7 @@
 #include "esp_bt_device.h"
 #include "esp_spp_api.h"
 
-#define SPP_TAG "SPP_ACCEPTOR_DEMO"
+#define SPP_TAG "SPP"
 #define SPP_SERVER_NAME "DOKIDOKI_SPP_SERVER"
 #define DEVICE_NAME "DOKIDOKI"
 
