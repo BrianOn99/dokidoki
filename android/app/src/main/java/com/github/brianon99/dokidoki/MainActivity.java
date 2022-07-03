@@ -82,8 +82,8 @@ public class MainActivity extends Activity {
         joystick.setOnMoveListener((double x, double y) -> {
             ByteBuffer b = ByteBuffer.allocate(17);
             b.put(MOV);
-            b.putLong(Double.doubleToRawLongBits(x));
-            b.putLong(Double.doubleToRawLongBits(y));
+            b.putInt((int) Math.round(x * (1L<<31)));
+            b.putInt((int) Math.round(y * (1L<<31)));
             Log.d("TTTj", "" + x);
             bluetoothConnection.write(b.array());
         }, 500);
