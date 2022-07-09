@@ -446,12 +446,12 @@ public class JoystickView extends View
         mPosX = mButtonDirection > 0 ? mCenterX : (int) event.getX(); // direction positive is vertical axe
 
         int strength = getStrength();
-        if (strength < 25) {
+        if (strength < 10) {
             mPosY = mCenterY;
             mPosX = mCenterX;
-        } else if (strength < 50) {
-            mPosY = (int) (50.0 / strength * (mPosY - mCenterY) + mCenterY);
-            mPosX = (int) (50.0 / strength * (mPosX - mCenterX) + mCenterX);
+        } else if (strength < 20) {
+            mPosY = (int) (20.0 / strength * (mPosY - mCenterY) + mCenterY);
+            mPosX = (int) (20.0 / strength * (mPosX - mCenterX) + mCenterX);
         }
 
         if (event.getAction() == MotionEvent.ACTION_UP) {
