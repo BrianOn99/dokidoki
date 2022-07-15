@@ -29,18 +29,21 @@ static uint8_t MOV = 1;
 struct direction {
 	gpio_num_t in_a;
 	gpio_num_t in_b;
+	gpio_num_t en;
 	ledc_channel_t ch;
 };
 
 struct direction VERTICAL = {
-	.in_a = GPIO_NUM_4,
-	.in_b = GPIO_NUM_5,
+	.in_a = GPIO_NUM_2,
+	.in_b = GPIO_NUM_15,
+	.en = GPIO_NUM_4,
 	.ch = LEDC_CHANNEL_0,
 };
 
 struct direction HORIZONTAL = {
-	.in_a = GPIO_NUM_21,
-	.in_b = GPIO_NUM_22,
+	.in_a = GPIO_NUM_14,
+	.in_b = GPIO_NUM_27,
+	.en = GPIO_NUM_13,
 	.ch = LEDC_CHANNEL_1,
 };
 
@@ -49,7 +52,7 @@ static void ledc_init(void)
 	ledc_channel_config_t ledc_channel = {
 		.channel    = VERTICAL.ch,
 		.duty       = 0,
-		.gpio_num   = GPIO_NUM_18,
+		.gpio_num   = VERTICAL.en,
 		.speed_mode = LEDC_LOW_SPEED_MODE,
 		.hpoint     = 0,
 		.timer_sel  = LEDC_TIMER_1
@@ -57,7 +60,7 @@ static void ledc_init(void)
 	ledc_channel_config(&ledc_channel);
 
 	ledc_channel.channel = HORIZONTAL.ch;
-	ledc_channel.gpio_num = GPIO_NUM_19;
+	ledc_channel.gpio_num = HORIZONTAL.en;
 	ledc_channel_config(&ledc_channel);
 
 	ledc_timer_config_t ledc_timer = {
@@ -129,12 +132,12 @@ static void command_handler(uint8_t *cmd, int len)
 void app_main()
 {
 	gpio_num_t out_pins[6] = {
-		GPIO_NUM_4,
-		GPIO_NUM_5,
-		GPIO_NUM_18,
-		GPIO_NUM_21,
-		GPIO_NUM_22,
-		GPIO_NUM_19,
+		VERTICAL.in_a,
+		VERTICAL.in_b,
+		VERTICAL.en,
+		HORIZONTAL.in_a,
+		HORIZONTAL.in_b,
+		HORIZONTAL.en
 	};
 
 	for (int i=0; i<sizeof(out_pins)/sizeof(gpio_num_t); i++) {
@@ -144,6 +147,6 @@ void app_main()
 
 	bluetooth_init(command_handler);
 	ledc_init();
-	gpio_set_level(GPIO_NUM_4, 0);
-	gpio_set_level(GPIO_NUM_5, 0);
+	gpio_set_level(VERTICAL.en, 0);
+	gpio_set_level(HORIZONTAL.en, 0);
 }
