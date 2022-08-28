@@ -34,15 +34,15 @@ struct direction {
 };
 
 struct direction VERTICAL = {
-	.in_a = GPIO_NUM_2,
-	.in_b = GPIO_NUM_15,
+	.in_b = GPIO_NUM_2,
+	.in_a = GPIO_NUM_15,
 	.en = GPIO_NUM_4,
 	.ch = LEDC_CHANNEL_0,
 };
 
 struct direction HORIZONTAL = {
-	.in_a = GPIO_NUM_14,
-	.in_b = GPIO_NUM_27,
+	.in_b = GPIO_NUM_14,
+	.in_a = GPIO_NUM_27,
 	.en = GPIO_NUM_13,
 	.ch = LEDC_CHANNEL_1,
 };

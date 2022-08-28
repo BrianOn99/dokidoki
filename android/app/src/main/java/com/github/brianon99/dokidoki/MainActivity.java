@@ -1,18 +1,12 @@
 package com.github.brianon99.dokidoki;
 
-import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
-import android.bluetooth.BluetoothSocket;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Toast;
-
-import com.github.brianon99.dokidoki.view.JoystickView;
+import android.widget.ToggleButton;
 
 import java.nio.ByteBuffer;
 
@@ -22,19 +16,65 @@ public class MainActivity extends Activity {
     private final byte MOV = 1;
     private Application.BluetoothConnection bluetoothConnection;
 
+    private static int[][] btnDirections = {
+            {R.id.btn1, -1, 1},
+            {R.id.btn2, 0, 1},
+            {R.id.btn3, 1, 1},
+            {R.id.btn4, -1, 0},
+            {R.id.btn6, 1, 0},
+            {R.id.btn7, -1, -1},
+            {R.id.btn8, 0, -1},
+            {R.id.btn9, 1, -1},
+    };
+
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        JoystickView joystick = findViewById(R.id.joystick);
         bluetoothConnection = ((Application) getApplication()).getBluetoothConnection();
+        ToggleButton tb = findViewById(R.id.speed);
 
-        joystick.setOnMoveListener((double x, double y) -> {
-            ByteBuffer b = ByteBuffer.allocate(9);
-            b.put(MOV);
-            b.putInt((int) Math.round(x * (1L<<31)));
-            b.putInt((int) Math.round(y * (1L<<31)));
-            bluetoothConnection.write(b.array());
-        }, 500);
+        for (int[] btnDirection: btnDirections) {
+            View v = findViewById(btnDirection[0]);
+            v.setOnTouchListener((View _v, MotionEvent event) -> {
+                ByteBuffer b = ByteBuffer.allocate(9);
+                b.put(MOV);
+                int speed = Integer.MAX_VALUE;
+                if (tb.isChecked()) {
+                    speed = speed / 8;
+                }
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        Toast.makeText(this, "down", Toast.LENGTH_SHORT).show();
+                        if (btnDirection[1] == 1)
+                            b.putInt(speed);
+                        else if (btnDirection[1] == -1)
+                            b.putInt(-speed);
+                        else
+                            b.putInt(0);
+
+                        if (btnDirection[2] == 1)
+                            b.putInt(speed);
+                        else if (btnDirection[2] == -1)
+                            b.putInt(-speed);
+                        else
+                            b.putInt(0);
+
+                        bluetoothConnection.write(b.array());
+                        break;
+
+                    case MotionEvent.ACTION_UP:
+                        b.putInt(0);
+                        b.putInt(0);
+                        _v.performClick();
+                        bluetoothConnection.write(b.array());
+                        break;
+                    default:
+                        break;
+                }
+                return true;
+            });
+        }
     }
 }

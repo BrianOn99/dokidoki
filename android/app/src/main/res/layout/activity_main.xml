@@ -1,21 +1,100 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main_sky_view_root"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:theme="@android:style/Theme.Black">
-    <com.github.brianon99.dokidoki.view.JoystickView
-        xmlns:custom="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/joystick"
-        android:layout_marginLeft="14dp"
-        android:layout_marginRight="14dp"
+    android:paddingBottom="10dp"
+    android:paddingTop="10dp"
+    tools:context="MainActivity">
+
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        custom:JV_buttonColor="#C0C0C0"
-        custom:JV_buttonSizeRatio="20%"
-        custom:JV_borderColor="#A0A0A0"
-        custom:JV_backgroundColor="#101010"
-        custom:JV_borderWidth="4dp"
-        custom:JV_fixedCenter="false"/>
-</RelativeLayout>
+        android:layout_height="120dp"
+        android:weightSum="3">
+
+        <Button
+            android:id="@+id/btn1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+
+        <Button
+            android:id="@+id/btn2"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+
+        <Button
+            android:id="@+id/btn3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:weightSum="3">
+
+        <Button
+            android:id="@+id/btn4"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            tools:ignore="ButtonStyle,SpeakableTextPresentCheck" />
+
+        <Button
+            android:id="@+id/btn6"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:weightSum="3">
+
+        <Button
+            android:id="@+id/btn7"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+
+        <Button
+            android:id="@+id/btn8"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+
+        <Button
+            android:id="@+id/btn9"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+    </LinearLayout>
+    <ToggleButton
+        android:id="@+id/speed"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:textOff="fast"
+        android:textOn="slow"
+        android:textSize="25sp"
+        android:disabledAlpha="@android:integer/config_longAnimTime" />
+</LinearLayout>
