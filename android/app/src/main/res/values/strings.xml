@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">dokidoki</string>
+    <string name="connection_connected">connected</string>
+    <string name="connection_connecting">connecting...</string>
+    <string name="connection_disconnected">disconnected</string>
 </resources>

@@ -34,15 +34,15 @@ struct direction {
 };
 
 struct direction VERTICAL = {
-	.in_b = GPIO_NUM_2,
-	.in_a = GPIO_NUM_15,
+	.in_a = GPIO_NUM_2,
+	.in_b = GPIO_NUM_15,
 	.en = GPIO_NUM_4,
 	.ch = LEDC_CHANNEL_0,
 };
 
 struct direction HORIZONTAL = {
-	.in_b = GPIO_NUM_14,
 	.in_a = GPIO_NUM_27,
+	.in_b = GPIO_NUM_14,
 	.en = GPIO_NUM_13,
 	.ch = LEDC_CHANNEL_1,
 };
@@ -65,7 +65,7 @@ static void ledc_init(void)
 
 	ledc_timer_config_t ledc_timer = {
 		.duty_resolution = SPEED_RESOLUTION, // resolution of PWM duty
-		.freq_hz = 400,                      // frequency of PWM signal
+		.freq_hz = 100,                      // frequency of PWM signal
 		.speed_mode = LEDC_LOW_SPEED_MODE,           // timer mode
 		.timer_num = LEDC_TIMER_1,            // timer index
 		.clk_cfg = LEDC_AUTO_CLK,              // Auto select the source clock

@@ -2,21 +2,62 @@ package com.github.brianon99.dokidoki;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
-public class MainActivity extends Activity {
-    private final static int REQUEST_ENABLE_BT = 1;
-    private final static String TAG = "DOKI_debug_MainActivity";
+public class MainActivity extends Activity implements SerialListener {
     private final byte MOV = 1;
-    private Application.BluetoothConnection bluetoothConnection;
+    private SerialSocket serialSocket;
+    private TextView connectionStatusView;
 
-    private static int[][] btnDirections = {
+    @Override
+    public void onSerialConnectError(Exception e) {
+        runOnUiThread(() ->{
+            new AlertDialog.Builder(this)
+                .setTitle("Connection Error")
+                .setMessage(e.getMessage())
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                })
+                .show();
+        });
+    }
+
+    @Override
+    public void onSerialRead(byte[] data) {
+    }
+
+    @Override
+    public void onSerialIoError(Exception e) {
+    }
+
+    @Override
+    public void updateStatus(Connected c) {
+        switch (c) {
+            case False:
+                connectionStatusView.setText(R.string.connection_disconnected);
+                break;
+            case True:
+                connectionStatusView.setText(R.string.connection_connected);
+                break;
+            case Connectting:
+                connectionStatusView.setText(R.string.connection_connecting);
+                break;
+        }
+    }
+
+    private static final int[][] btnDirections = {
             {R.id.btn1, -1, 1},
             {R.id.btn2, 0, 1},
             {R.id.btn3, 1, 1},
@@ -32,7 +73,9 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        bluetoothConnection = ((Application) getApplication()).getBluetoothConnection();
+        connectionStatusView = findViewById(R.id.connection_status);
+        ((Application) getApplication()).setSerialListener(this);
+        this.serialSocket = ((Application) getApplication()).serialSocket;
         ToggleButton tb = findViewById(R.id.speed);
 
         for (int[] btnDirection: btnDirections) {
@@ -42,11 +85,10 @@ public class MainActivity extends Activity {
                 b.put(MOV);
                 int speed = Integer.MAX_VALUE;
                 if (tb.isChecked()) {
-                    speed = speed / 8;
+                    speed = speed / 5;
                 }
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        Toast.makeText(this, "down", Toast.LENGTH_SHORT).show();
                         if (btnDirection[1] == 1)
                             b.putInt(speed);
                         else if (btnDirection[1] == -1)
@@ -61,14 +103,22 @@ public class MainActivity extends Activity {
                         else
                             b.putInt(0);
 
-                        bluetoothConnection.write(b.array());
+                        try {
+                            serialSocket.write(b.array());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         break;
 
                     case MotionEvent.ACTION_UP:
                         b.putInt(0);
                         b.putInt(0);
                         _v.performClick();
-                        bluetoothConnection.write(b.array());
+                        try {
+                            serialSocket.write(b.array());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                         break;
                     default:
                         break;
