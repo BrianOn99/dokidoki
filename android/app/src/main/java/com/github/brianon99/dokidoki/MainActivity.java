@@ -128,7 +128,7 @@ public class MainActivity extends Activity implements SerialListener {
                 b.put(MOV);
                 int speed = Integer.MAX_VALUE;
                 if (tb.isChecked()) {
-                    speed = speed / 5;
+                    speed = speed / 3;
                 }
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
