@@ -1,9 +1,13 @@
 package com.github.brianon99.dokidoki;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -68,15 +72,54 @@ public class MainActivity extends Activity implements SerialListener {
             {R.id.btn9, 1, -1},
     };
 
+    private void initBlueToothConnection() {
+        Boolean flag = false;
+        if (checkSelfPermission(Manifest.permission.BLUETOOTH) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(
+                    new String[]{Manifest.permission.BLUETOOTH},
+                    2);
+            flag = true;
+        }
+        if (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                requestPermissions(
+                        new String[]{Manifest.permission.BLUETOOTH_CONNECT},
+                        1
+                );
+            }
+            flag = true;
+        }
+        if (flag)
+            return;
+
+        Application app = ((Application) getApplication());
+        if (app.initializeBluetooth() == null) {
+            new AlertDialog.Builder(this)
+                    .setTitle("Initialization Error")
+                    .setMessage("Cannot find remote device")
+                    .show();
+        }
+        app.setSerialListener(this);
+        this.serialSocket = ((Application) getApplication()).serialSocket;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            initBlueToothConnection();
+        }
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         connectionStatusView = findViewById(R.id.connection_status);
-        ((Application) getApplication()).setSerialListener(this);
-        this.serialSocket = ((Application) getApplication()).serialSocket;
         ToggleButton tb = findViewById(R.id.speed);
+
+        initBlueToothConnection();;
 
         for (int[] btnDirection: btnDirections) {
             View v = findViewById(btnDirection[0]);

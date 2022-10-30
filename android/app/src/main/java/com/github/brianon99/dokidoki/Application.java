@@ -13,17 +13,16 @@ public class Application extends android.app.Application {
     public SerialSocket serialSocket;
     private BluetoothDevice remoteDevice;
 
-    @Override
-    public void onCreate() {
+    public BluetoothDevice initializeBluetooth() {
         super.onCreate();
         BluetoothManager bluetoothManager = getSystemService(BluetoothManager.class);
         BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
         if (bluetoothAdapter == null) {
-            return;
+            return null;
         }
         if (!bluetoothAdapter.isEnabled()) {
             if (checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
-                return;
+                return null;
             }
         } else {
             Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
@@ -38,6 +37,8 @@ public class Application extends android.app.Application {
                 }
             }
         }
+
+        return this.remoteDevice;
     }
 
     public void setSerialListener(SerialListener listener) {
