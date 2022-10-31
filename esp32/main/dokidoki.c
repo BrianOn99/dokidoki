@@ -33,6 +33,7 @@
  */
 #define QUANTA_PER_RAD 168500
 #define PI 3.141592654
+#define NA_QUANTA (QUANTA_PER_RAD * 100)
 
 enum _state
 {
@@ -42,22 +43,22 @@ enum _state
 static enum _state state = STATE_IDLE;
 static double SPEED_MAX = (1 << 7) - 1;
 static uint8_t MOV = 1;
-static int theta_quanta = 0;  // telescope elevation
-static int phi_quanta = 0;  // telescope horizontal angle
-static int to_theta_quanta = 0;  // GOTO target telescope elevation
-static int to_phi_quanta = 0;  // GOTO target horizontal angle
 
 
 struct direction {
+	//char name[2];
 	gpio_num_t in_a;
 	gpio_num_t in_b;
 	gpio_num_t en;
 	gpio_num_t rotory_sensor;
 	gpio_num_t direction_sensor;
 	ledc_channel_t ch;
+	int quanta; // telescope elevation / horizontal angle
+	int to_quanta; // GOTO target telescope elevation / horizontal angle
 };
 
 struct direction VERTICAL = {
+	//.name = "V",
 	.in_a = GPIO_NUM_2,
 	.in_b = GPIO_NUM_15,
 	.en = GPIO_NUM_4,
@@ -67,6 +68,7 @@ struct direction VERTICAL = {
 };
 
 struct direction HORIZONTAL = {
+	//.name = "H",
 	.in_a = GPIO_NUM_27,
 	.in_b = GPIO_NUM_14,
 	.en = GPIO_NUM_13,
@@ -124,17 +126,21 @@ static void normalize_strength(int32_t *x, uint32_t *strength, signed char *dire
 	*strength = (uint32_t)(SPEED_MAX * l / INT32_MAX);
 }
 
-static void set_pins_rotation(signed char plus_minus, uint32_t strength, struct direction *d)
+static void set_pins_rotation(signed char plus_minus, uint32_t strength, struct direction *axis)
 {
 	if (plus_minus > 0) {
-		gpio_set_level(d->in_a, 0);
-		gpio_set_level(d->in_b, 1);
+		gpio_set_level(axis->in_a, 0);
+		gpio_set_level(axis->in_b, 1);
+	} else if (plus_minus <0) {
+		gpio_set_level(axis->in_a, 1);
+		gpio_set_level(axis->in_b, 0);
 	} else {
-		gpio_set_level(d->in_a, 1);
-		gpio_set_level(d->in_b, 0);
+		gpio_set_level(axis->in_a, 0);
+		gpio_set_level(axis->in_b, 0);
 	}
-	ledc_set_duty(LEDC_LOW_SPEED_MODE, d->ch, strength);
-	ledc_update_duty(LEDC_LOW_SPEED_MODE, d->ch);
+
+	ledc_set_duty(LEDC_LOW_SPEED_MODE, axis->ch, strength);
+	ledc_update_duty(LEDC_LOW_SPEED_MODE, axis->ch);
 }
 
 static void command_handler(uint8_t *cmd, int len)
@@ -157,23 +163,35 @@ static void command_handler(uint8_t *cmd, int len)
 	}
 }
 
-static void IRAM_ATTR rotory_isr_handler(void* arg)
+static void IRAM_ATTR rotory_isr_handler(struct direction *axis)
 {
-	phi_quanta += 1;
-	if (state == STATE_GOTO) {
-		if (phi_quanta >= to_phi_quanta) {
-			set_pins_rotation(0, 0, &HORIZONTAL);
-			state = STATE_IDLE;
-		}
+	int level = gpio_get_level(axis->direction_sensor);
+	axis->quanta += level * 2 - 1;
+
+	if (axis->to_quanta != NA_QUANTA && axis->quanta == axis->to_quanta) {
+		set_pins_rotation(0, 0, axis);
+		axis->to_quanta = NA_QUANTA;
 	}
 }
 
 /* params are radian*/
 static void rotate(double to_theta, double to_phi)
 {
-	state = STATE_GOTO;
-	to_phi_quanta = to_phi * QUANTA_PER_RAD;
-	set_pins_rotation(1, SPEED_MAX, &HORIZONTAL);
+	struct direction * axises[2] = {&HORIZONTAL, &VERTICAL};
+
+	HORIZONTAL.to_quanta = to_phi * QUANTA_PER_RAD;
+	VERTICAL.to_quanta = to_theta * QUANTA_PER_RAD;
+	for (int i=0; i<2;i++) {
+		int d;
+		if (axises[i]->to_quanta > axises[i]->quanta) {
+			d = 1;
+		} else if (axises[i]->to_quanta < axises[i]->quanta) {
+			d = -1;
+		} else {
+			continue;
+		}
+		set_pins_rotation(d, SPEED_MAX, axises[i]);
+	}
 }
 
 void app_main()
@@ -203,11 +221,13 @@ void app_main()
 	bluetooth_init(command_handler);
 	ledc_init();
 	gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);
-	gpio_isr_handler_add(VERTICAL.rotory_sensor, rotory_isr_handler, (void*) &VERTICAL);
-	gpio_isr_handler_add(HORIZONTAL.rotory_sensor, rotory_isr_handler, (void*) &HORIZONTAL);
+	gpio_isr_handler_add(
+		VERTICAL.rotory_sensor, (void (*)(void *)) rotory_isr_handler, (void*) &VERTICAL);
+	gpio_isr_handler_add(
+		HORIZONTAL.rotory_sensor, (void (*)(void *)) rotory_isr_handler, (void*) &HORIZONTAL);
 
 	gpio_set_level(VERTICAL.en, 0);
 	gpio_set_level(HORIZONTAL.en, 0);
 
-	//rotate(PI*2, PI*2);
+	//rotate(-PI/10, 0);
 }
