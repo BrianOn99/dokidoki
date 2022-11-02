@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/gpio.h"
@@ -6,6 +7,7 @@
 #include "driver/ledc.h"
 #include "bluetooth.h"
 #include "esp_log.h"
+#include "takidoki.h"
 
 #define TAG "DOKI"
 
@@ -32,18 +34,28 @@
  * There is only 0.8 trigger per arc second, so precision to arc second is meaningless
  */
 #define QUANTA_PER_RAD 168500
-#define PI 3.141592654
 #define NA_QUANTA (QUANTA_PER_RAD * 100)
+#define MOVE 1
+#define ALIGN 2
 
-enum _state
-{
-      STATE_IDLE=0, STATE_GOTO=1,
+static double SPEED_MAX = (1 << 7) - 1;
+
+/*
+ * each 0-2PI is mapped to 0-INT16_MAX
+ */
+struct align_cmd_star {
+	uint32_t time;
+	uint16_t phi;
+	uint16_t theta;
+	uint16_t asc;
+	uint16_t dec;
 };
 
-static enum _state state = STATE_IDLE;
-static double SPEED_MAX = (1 << 7) - 1;
-static uint8_t MOV = 1;
-
+struct align_cmd {
+	uint8_t cmd;
+	struct align_cmd_star star1;
+	struct align_cmd_star star2;
+};
 
 struct direction {
 	//char name[2];
@@ -138,27 +150,57 @@ static void set_pins_rotation(signed char plus_minus, uint32_t strength, struct 
 		gpio_set_level(axis->in_a, 0);
 		gpio_set_level(axis->in_b, 0);
 	}
+	gpio_set_level(HORIZONTAL.en, 1);
+	gpio_set_level(VERTICAL.en, 1);
 
 	ledc_set_duty(LEDC_LOW_SPEED_MODE, axis->ch, strength);
 	ledc_update_duty(LEDC_LOW_SPEED_MODE, axis->ch);
 }
 
+static double u16r(uint16_t x)
+{
+	return ((double) x) / UINT16_MAX * 2 * M_PI;
+}
+
 static void command_handler(uint8_t *cmd, int len)
 {
+	uint32_t strength;
+	signed char plus_minus;
+
 	ESP_LOGI(TAG, "command_handler");
-	if (cmd[0] == MOV) {
-		uint32_t strength;
-		signed char plus_minus;
+	switch (cmd[0]) {
+	case MOVE:
 		//assert(len == sizeof(uint8_t) + sizeof(int32_t) * 2);
 
 		normalize_strength((int32_t *)(cmd+1), &strength, &plus_minus);
-		ESP_LOGI(TAG, "strength %d plus_minus %d", strength, plus_minus);
 		set_pins_rotation(plus_minus, strength, &HORIZONTAL);
 
 		normalize_strength((int32_t *)(cmd+5), &strength, &plus_minus);
-		ESP_LOGI(TAG, "strength %d direction %d", strength, plus_minus);
 		set_pins_rotation(plus_minus, strength, &VERTICAL);
-	} else {
+		break;
+	case ALIGN:
+		;
+		struct align_cmd_star s1 = {2352, 7264, 7264, 14412, 8374};
+		struct align_cmd_star s2 = {2418, 17221, 6590, 6910, 16250};
+		struct ref_star stars[2] = {
+			{s1.time, u16r(s1.phi), u16r(s1.theta), u16r(s1.asc), u16r(s1.dec)},
+			{s2.time, u16r(s2.phi), u16r(s2.theta), u16r(s2.asc), u16r(s2.dec)},
+		};
+		printf("A %.2f %.2f %.2f %.2f %.2f\n", stars[0].phi, stars[0].theta, stars[0].dec, stars[0].asc, stars[0].time);
+		printf("B %.2f %.2f %.2f %.2f %.2f\n", stars[1].phi, stars[1].theta, stars[1].dec, stars[1].asc, stars[1].time);
+		align(stars);
+		double phi, theta;
+		struct celestial_star target_star = {
+			.asc = u16r(13021),
+			.dec = u16r(3107),
+			.time = 3720,
+		};
+		printf("C %.2f %.2f %.2f\n", target_star.asc, target_star.dec, target_star.time);
+		eq2tel(&phi, &theta, &target_star);
+		printf("TELESCOPE DIRECTION (DEG): %'.5f\n", theta);
+		printf("TELESCOPE ELEVATION (DEG): %'.5f\n", phi);
+		break;
+	default:
 		ESP_LOGI(TAG, "Unknown cmd");
 	}
 }
@@ -229,5 +271,7 @@ void app_main()
 	gpio_set_level(VERTICAL.en, 0);
 	gpio_set_level(HORIZONTAL.en, 0);
 
-	//rotate(-PI/10, 0);
+	//rotate(-M_PI/10, 0);
+	uint8_t x[] = "\x02";
+	command_handler(x, 1);
 }

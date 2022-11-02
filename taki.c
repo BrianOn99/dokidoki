@@ -115,7 +115,7 @@ void angle(double *h, double *f, double *v_c) {
 	if (c == 0) {
 		a = 0;  // value does not matter
 	} else if (v_c[0] == 0) {
-		a = v_c[2] > 0 ? 90.0 : -90.0;
+		a = v_c[1] > 0 ? 90.0 : -90.0;
 	} else if (v_c[0] > 0) {
 		a = atan(v_c[1] / v_c[0]) * G;
 	} else {
@@ -132,6 +132,7 @@ void apparent_angle(double *a_app, double *d_app, double a, double d) {
 	v[0] = cos(a) * cos(d) + sin(a) * Z2/G - sin(a) * sin(d) * Z1/G;
 	v[1] = sin(a) * cos(d) - cos(a) * Z2/G + cos(a) * sin(d) * Z1/G;
 	v[2] = sin(d);
+	printf("%'.4f %'.4f %'.4f %'.4f %'.4f\n", cos(a), sin(a), v[2], v[1], v[0]);
 	angle(d_app, a_app, v);
 	*d_app = *d_app - Z3;
 }
@@ -153,8 +154,8 @@ void eq2tel() {  // taki.bas 485
 	angle(&h, &f, v_c);
 	apparent_angle(&a_app, &d_app, f, h);
 
-	printf("TELESCOPE DIRECTION (DEG): %'.2f\n", d_app);
-	printf("TELESCOPE ELEVATION (DEG): %'.2f\n", a_app);
+	printf("TELESCOPE ELEVATION (DEG): %'.2f\n", d_app);
+	printf("TELESCOPE DIRECTION (DEG): %'.2f\n", a_app);
 }
 
 int main() {
