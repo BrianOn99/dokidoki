@@ -9,9 +9,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -20,10 +20,15 @@ import java.nio.ByteBuffer;
 
 public class MainActivity extends Activity implements SerialListener {
     private final byte MOV = 1;
+    private final byte ALIGN = 2;
+    private final byte GOTO = 3;
     private SerialSocket serialSocket;
     private TextView connectionStatusView;
     private Connected connectionStatus = Connected.False;
     private String KEY_STATE = "KEY_STATE";
+    private ToggleButton speedToogle;
+    private Button cmdEnter;
+    private Button cmdGoto;
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -121,27 +126,14 @@ public class MainActivity extends Activity implements SerialListener {
         }
     }
 
-    @SuppressLint("ClickableViewAccessibility")
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        connectionStatusView = findViewById(R.id.connection_status);
-        ToggleButton tb = findViewById(R.id.speed);
-
-        if (savedInstanceState != null) {
-            this.updateStatus((Connected) savedInstanceState.getSerializable(KEY_STATE));
-        }
-
-        initBlueToothConnection();;
-
+    private void setBtnDirectionListener() {
         for (int[] btnDirection: btnDirections) {
             View v = findViewById(btnDirection[0]);
             v.setOnTouchListener((View _v, MotionEvent event) -> {
                 ByteBuffer b = ByteBuffer.allocate(9);
                 b.put(MOV);
                 int speed = Integer.MAX_VALUE;
-                if (tb.isChecked()) {
+                if (speedToogle.isChecked()) {
                     speed = speed / 3;
                 }
                 switch (event.getAction()) {
@@ -183,5 +175,55 @@ public class MainActivity extends Activity implements SerialListener {
                 return true;
             });
         }
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        connectionStatusView = findViewById(R.id.connection_status);
+        speedToogle = findViewById(R.id.speed);
+        cmdEnter = findViewById(R.id.cmd_enter);
+        cmdGoto = findViewById(R.id.cmd_goto);
+
+        if (savedInstanceState != null) {
+            this.updateStatus((Connected) savedInstanceState.getSerializable(KEY_STATE));
+        }
+
+        initBlueToothConnection();
+        setBtnDirectionListener();
+        cmdEnter.setOnClickListener((View view) -> {
+            ByteBuffer b = ByteBuffer.allocate(25);
+            b.put(ALIGN);
+            b.putInt(2352);
+            b.putShort((short)7264);
+            b.putShort((short)7264);
+            b.putShort((short)14412);
+            b.putShort((short)8374);
+            b.putInt(2418);
+            b.putShort((short)17221);
+            b.putShort((short)6590);
+            b.putShort((short)6910);
+            b.putShort((short)16250);
+            try {
+                serialSocket.write(b.array());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+
+        cmdGoto.setOnClickListener((View view) -> {
+            ByteBuffer b = ByteBuffer.allocate(9);
+            b.put(GOTO);
+            b.putInt(3720);
+            b.putShort((short)13021);
+            b.putShort((short)3107);
+            try {
+                serialSocket.write(b.array());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

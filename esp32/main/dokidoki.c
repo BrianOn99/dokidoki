@@ -11,7 +11,7 @@
 
 #define TAG "DOKI"
 
-#define htonl( ulIn )\
+#define htonl(ulIn)\
 (\
 ( uint32_t )\
 (\
@@ -21,7 +21,10 @@
 ( ( ( ( uint32_t ) ( ulIn ) )                ) >> 24  )  	\
 )\
 )
-#define ntohl( x ) htonl( x )
+#define ntohl(x) htonl(x)
+
+#define htons(x) ((((x) >> 8) & 0xff) | (((x) & 0xff) << 8))
+#define ntohs(x) htons(x)
 
 #define ESP_INTR_FLAG_DEFAULT 0
 #define SPEED_RESOLUTION 7
@@ -37,6 +40,9 @@
 #define NA_QUANTA (QUANTA_PER_RAD * 100)
 #define MOVE 1
 #define ALIGN 2
+#define GOTO 3
+#define ZERO 4
+#define TRACK 5
 
 static double SPEED_MAX = (1 << 7) - 1;
 
@@ -51,10 +57,19 @@ struct align_cmd_star {
 	uint16_t dec;
 };
 
+#pragma pack(1)
 struct align_cmd {
 	uint8_t cmd;
 	struct align_cmd_star star1;
 	struct align_cmd_star star2;
+};
+
+#pragma pack(1)
+struct goto_cmd {
+	uint8_t cmd;
+	uint32_t time;
+	uint16_t asc;
+	uint16_t dec;
 };
 
 struct direction {
@@ -159,7 +174,7 @@ static void set_pins_rotation(signed char plus_minus, uint32_t strength, struct 
 
 static double u16r(uint16_t x)
 {
-	return ((double) x) / UINT16_MAX * 2 * M_PI;
+	return ((double) ntohs(x)) / UINT16_MAX * 2 * M_PI;
 }
 
 static void command_handler(uint8_t *cmd, int len)
@@ -170,6 +185,9 @@ static void command_handler(uint8_t *cmd, int len)
 	ESP_LOGI(TAG, "command_handler");
 	switch (cmd[0]) {
 	case MOVE:
+		if (len < 9) {
+			break;
+		}
 		//assert(len == sizeof(uint8_t) + sizeof(int32_t) * 2);
 
 		normalize_strength((int32_t *)(cmd+1), &strength, &plus_minus);
@@ -179,23 +197,29 @@ static void command_handler(uint8_t *cmd, int len)
 		set_pins_rotation(plus_minus, strength, &VERTICAL);
 		break;
 	case ALIGN:
-		;
-		struct align_cmd_star s1 = {2352, 7264, 7264, 14412, 8374};
-		struct align_cmd_star s2 = {2418, 17221, 6590, 6910, 16250};
+		if (len < sizeof(struct align_cmd)) {
+			break;
+		}
+		struct align_cmd *c = (struct align_cmd *) cmd;
+		struct align_cmd_star *s1 = &c->star1;
+		struct align_cmd_star *s2 = &c->star2;
 		struct ref_star stars[2] = {
-			{s1.time, u16r(s1.phi), u16r(s1.theta), u16r(s1.asc), u16r(s1.dec)},
-			{s2.time, u16r(s2.phi), u16r(s2.theta), u16r(s2.asc), u16r(s2.dec)},
+			{ntohl(s1->time), u16r(s1->phi), u16r(s1->theta), u16r(s1->asc), u16r(s1->dec)},
+			{ntohl(s2->time), u16r(s2->phi), u16r(s2->theta), u16r(s2->asc), u16r(s2->dec)},
 		};
-		printf("A %.2f %.2f %.2f %.2f %.2f\n", stars[0].phi, stars[0].theta, stars[0].dec, stars[0].asc, stars[0].time);
-		printf("B %.2f %.2f %.2f %.2f %.2f\n", stars[1].phi, stars[1].theta, stars[1].dec, stars[1].asc, stars[1].time);
 		align(stars);
+		break;
+	case GOTO:
+		if (len < sizeof(struct goto_cmd)) {
+			break;
+		}
+		struct goto_cmd *d = (struct goto_cmd *) cmd;
 		double phi, theta;
 		struct celestial_star target_star = {
-			.asc = u16r(13021),
-			.dec = u16r(3107),
-			.time = 3720,
+			.asc = u16r(d->asc),
+			.dec = u16r(d->dec),
+			.time = ntohl(d->time),
 		};
-		printf("C %.2f %.2f %.2f\n", target_star.asc, target_star.dec, target_star.time);
 		eq2tel(&phi, &theta, &target_star);
 		printf("TELESCOPE DIRECTION (DEG): %'.5f\n", theta);
 		printf("TELESCOPE ELEVATION (DEG): %'.5f\n", phi);
@@ -272,6 +296,9 @@ void app_main()
 	gpio_set_level(HORIZONTAL.en, 0);
 
 	//rotate(-M_PI/10, 0);
-	uint8_t x[] = "\x02";
-	command_handler(x, 1);
+
+	//struct align_cmd_star s1 = {2352, 7264, 7264, 14412, 8374};
+	//struct align_cmd_star s2 = {2418, 17221, 6590, 6910, 16250};
+	//struct align_cmd cmd = {'\x02', s1, s2};
+	//command_handler(&cmd, 99);
 }

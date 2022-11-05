@@ -132,7 +132,6 @@ void apparent_angle(double *a_app, double *d_app, double a, double d) {
 	v[0] = cos(a) * cos(d) + sin(a) * Z2/G - sin(a) * sin(d) * Z1/G;
 	v[1] = sin(a) * cos(d) - cos(a) * Z2/G + cos(a) * sin(d) * Z1/G;
 	v[2] = sin(d);
-	printf("%'.4f %'.4f %'.4f %'.4f %'.4f\n", cos(a), sin(a), v[2], v[1], v[0]);
 	angle(d_app, a_app, v);
 	*d_app = *d_app - Z3;
 }

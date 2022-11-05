@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingBottom="10dp"
     android:paddingTop="10dp"
@@ -103,4 +103,24 @@
         android:textOn="slow"
         android:textSize="25sp"
         android:disabledAlpha="@android:integer/config_longAnimTime" />
+    <RelativeLayout
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <Button
+            android:id="@+id/cmd_enter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:text="Enter">
+        </Button>
+        <Button
+            android:id="@+id/cmd_goto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:text="goto">
+        </Button>
+    </RelativeLayout>
 </LinearLayout>
