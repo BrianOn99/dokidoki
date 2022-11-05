@@ -36,11 +36,14 @@ class SerialSocket implements Runnable {
         return device.getName() != null ? device.getName() : device.getAddress();
     }
 
+    void setListener(SerialListener listener) {
+        this.listener = listener;
+    }
+
     /**
      * connect-success and most connect-errors are returned asynchronously to listener
      */
-    void connect(SerialListener listener) throws IOException {
-        this.listener = listener;
+    void connect() throws IOException {
         Executors.newSingleThreadExecutor().submit(this);
     }
 

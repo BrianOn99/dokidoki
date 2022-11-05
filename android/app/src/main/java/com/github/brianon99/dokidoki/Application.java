@@ -14,7 +14,10 @@ public class Application extends android.app.Application {
     private BluetoothDevice remoteDevice;
 
     public BluetoothDevice initializeBluetooth() {
-        super.onCreate();
+        if (this.remoteDevice != null) {
+            return this.remoteDevice;
+        }
+
         BluetoothManager bluetoothManager = getSystemService(BluetoothManager.class);
         BluetoothAdapter bluetoothAdapter = bluetoothManager.getAdapter();
         if (bluetoothAdapter == null) {
@@ -42,14 +45,15 @@ public class Application extends android.app.Application {
     }
 
     public void setSerialListener(SerialListener listener) {
-        connect(listener);
-    }
-
-    private void connect(SerialListener listener) {
         try {
-            listener.updateStatus(SerialListener.Connected.Connectting);
-            this.serialSocket = new SerialSocket(getApplicationContext(), remoteDevice);
-            this.serialSocket.connect(listener);
+            if (this.serialSocket == null) {
+                listener.updateStatus(SerialListener.Connected.Connectting);
+                this.serialSocket = new SerialSocket(getApplicationContext(), remoteDevice);
+                this.serialSocket.setListener(listener);
+                this.serialSocket.connect();
+            } else {
+                this.serialSocket.setListener(listener);
+            }
         } catch (Exception e) {
             listener.onSerialConnectError(e);
         }

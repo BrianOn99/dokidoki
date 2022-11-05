@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PersistableBundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
@@ -21,6 +22,14 @@ public class MainActivity extends Activity implements SerialListener {
     private final byte MOV = 1;
     private SerialSocket serialSocket;
     private TextView connectionStatusView;
+    private Connected connectionStatus = Connected.False;
+    private String KEY_STATE = "KEY_STATE";
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putSerializable(KEY_STATE, connectionStatus);
+    }
 
     @Override
     public void onSerialConnectError(Exception e) {
@@ -48,6 +57,7 @@ public class MainActivity extends Activity implements SerialListener {
 
     @Override
     public void updateStatus(Connected c) {
+        this.connectionStatus = c;
         switch (c) {
             case False:
                 connectionStatusView.setText(R.string.connection_disconnected);
@@ -100,7 +110,7 @@ public class MainActivity extends Activity implements SerialListener {
                     .show();
         }
         app.setSerialListener(this);
-        this.serialSocket = ((Application) getApplication()).serialSocket;
+        this.serialSocket = app.serialSocket;
     }
 
     @Override
@@ -118,6 +128,10 @@ public class MainActivity extends Activity implements SerialListener {
         setContentView(R.layout.activity_main);
         connectionStatusView = findViewById(R.id.connection_status);
         ToggleButton tb = findViewById(R.id.speed);
+
+        if (savedInstanceState != null) {
+            this.updateStatus((Connected) savedInstanceState.getSerializable(KEY_STATE));
+        }
 
         initBlueToothConnection();;
 
