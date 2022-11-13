@@ -1,8 +1,8 @@
 package com.github.brianon99.dokidoki;
 
 /*
- Code borrowed from https://github.com/bauerjj/Android-Simple-Bluetooth-Example
- By Justin Bauer
+ Code borrowed from https://github.com/kai-morich/SimpleBluetoothTerminal
+ By kai-morich
  */
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;

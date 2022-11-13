@@ -38,8 +38,7 @@
             android:id="@+id/btn3"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            />
+            android:layout_weight="1" />
     </LinearLayout>
 
     <LinearLayout
@@ -107,20 +106,131 @@
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="14dp"
+            android:layout_alignParentTop="true">
+            <LinearLayout
+                android:id="@+id/cmd_goto_options"
+                android:visibility="invisible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <EditText
+                    android:id="@+id/cmd_goto_options_dec"
+                    android:inputType="phone"
+                    android:layout_width="80dp"
+                    android:layout_height="26dp"
+                    android:hint="22+50"
+                    />
+                <EditText
+                    android:id="@+id/cmd_goto_options_asc"
+                    android:inputType="phone"
+                    android:layout_width="80dp"
+                    android:layout_height="26dp"
+                    android:layout_marginLeft="10dp"
+                    android:hint="114+30"
+                    />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/cmd_align_options"
+                android:visibility="invisible"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <EditText
+                        android:id="@+id/star1dec"
+                        android:inputType="phone"
+                        android:layout_width="80dp"
+                        android:layout_height="26dp"
+                        android:hint="22+50"
+                        />
+                    <EditText
+                        android:id="@+id/star1asc"
+                        android:inputType="phone"
+                        android:layout_width="80dp"
+                        android:layout_height="26dp"
+                        android:layout_marginLeft="10dp"
+                        android:hint="114+30"
+                        />
+                    <TextView
+                        android:id="@+id/star1_get_orientation"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        style="@style/CmdFlatButton"
+                        android:text="Get Orientation">
+                    </TextView>
+                </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp">
+                    <EditText
+                        android:id="@+id/star2dec"
+                        android:inputType="phone"
+                        android:layout_width="80dp"
+                        android:layout_height="26dp"
+                        android:hint="22+50"
+                        />
+                    <EditText
+                        android:id="@+id/star2asc"
+                        android:inputType="phone"
+                        android:layout_width="80dp"
+                        android:layout_height="26dp"
+                        android:layout_marginLeft="10dp"
+                        android:hint="114+30"
+                        />
+                    <TextView
+                        android:id="@+id/star2_get_orientation"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        style="@style/CmdFlatButton"
+                        android:text="Get Orientation">
+                    </TextView>
+                </LinearLayout>
+            </LinearLayout>
+        </FrameLayout>
+        <RadioGroup
+            android:id="@+id/cmd_group"
+            android:layout_above="@id/cmd_enter"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:id="@+id/cmd_zero"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:text="zero">
+            </RadioButton>
+            <RadioButton
+                android:id="@+id/cmd_align"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/cmd_zero"
+                android:layout_alignParentBottom="true"
+                android:text="align">
+            </RadioButton>
+            <RadioButton
+                android:id="@+id/cmd_goto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/cmd_align"
+                android:layout_alignParentBottom="true"
+                android:text="goto">
+            </RadioButton>
+        </RadioGroup>
         <Button
             android:id="@+id/cmd_enter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
             android:text="Enter">
-        </Button>
-        <Button
-            android:id="@+id/cmd_goto"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:text="goto">
         </Button>
     </RelativeLayout>
 </LinearLayout>

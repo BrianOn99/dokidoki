@@ -9,26 +9,39 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public class MainActivity extends Activity implements SerialListener {
     private final byte MOV = 1;
     private final byte ALIGN = 2;
     private final byte GOTO = 3;
+    private final byte ZERO = 4;
+    private final byte GET_THETA_PHI = 5;
     private SerialSocket serialSocket;
     private TextView connectionStatusView;
     private Connected connectionStatus = Connected.False;
     private String KEY_STATE = "KEY_STATE";
     private ToggleButton speedToogle;
-    private Button cmdEnter;
-    private Button cmdGoto;
+    private Listener cmdListener;
+    private byte[] star1timePhiTheta;
+    private byte[] star2timePhiTheta;
+    private int selectedCommand;
+    long epoch = 0;
+
+    interface Listener {
+        void onSerialRead (byte[] data);
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -54,6 +67,9 @@ public class MainActivity extends Activity implements SerialListener {
 
     @Override
     public void onSerialRead(byte[] data) {
+        if (cmdListener != null) {
+            cmdListener.onSerialRead(data);
+        }
     }
 
     @Override
@@ -177,6 +193,32 @@ public class MainActivity extends Activity implements SerialListener {
         }
     }
 
+    private void writeCmd(byte[] cmd) {
+        try {
+            serialSocket.write(cmd);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private byte[] textToAngle(EditText v) {
+        String s = v.getText().toString();
+        String[] ss = s.split("\\+");
+        if (ss.length != 2) {
+            v.setError("invalid");
+            throw new NumberFormatException();
+        }
+        double angle;
+        try {
+            angle = Double.parseDouble(ss[0]) + Double.parseDouble(ss[1]) / 60.0;
+        } catch (NumberFormatException e) {
+            v.setError("invalid");
+            throw e;
+        }
+        int a = (int) Math.round(angle / 360 * 65535);
+        return Arrays.copyOfRange(ByteBuffer.allocate(4).putInt(a).array(), 2, 4);
+    }
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,28 +226,116 @@ public class MainActivity extends Activity implements SerialListener {
         setContentView(R.layout.activity_main);
         connectionStatusView = findViewById(R.id.connection_status);
         speedToogle = findViewById(R.id.speed);
-        cmdEnter = findViewById(R.id.cmd_enter);
-        cmdGoto = findViewById(R.id.cmd_goto);
+        Button enter = findViewById(R.id.cmd_enter);
+        RadioGroup cmdGroup = findViewById(R.id.cmd_group);
+        View cmdStar1GetOrientation = findViewById(R.id.star1_get_orientation);
+        View cmdStar2GetOrientation = findViewById(R.id.star2_get_orientation);
 
         if (savedInstanceState != null) {
             this.updateStatus((Connected) savedInstanceState.getSerializable(KEY_STATE));
         }
 
+        int[][] cmdOptionMap = {
+            {R.id.cmd_zero, -1},
+            {R.id.cmd_align, R.id.cmd_align_options},
+            {R.id.cmd_goto, R.id.cmd_goto_options},
+        };
+
+        cmdGroup.setOnCheckedChangeListener((RadioGroup group, int checkedId) -> {
+            selectedCommand = checkedId;
+            for (int[] optionMap: cmdOptionMap) {
+                if (optionMap[1] == -1)
+                    continue;
+                int id = optionMap[1];
+                View v = findViewById(id);
+                v.setVisibility(checkedId == optionMap[0] ? View.VISIBLE : View.INVISIBLE);
+            }
+        });
+
         initBlueToothConnection();
         setBtnDirectionListener();
-        cmdEnter.setOnClickListener((View view) -> {
+
+        View.OnClickListener clickListener = (View view) -> {
+            ByteBuffer b = ByteBuffer.allocate(1);
+            b.put(GET_THETA_PHI);
+            try {
+                serialSocket.write(b.array());
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+            this.cmdListener = (byte[] data) -> {
+                if (data[0] != GET_THETA_PHI)
+                    return;
+                if (view.equals(cmdStar1GetOrientation)) {
+                    star1timePhiTheta = Arrays.copyOfRange(data, 1, 9);
+                } else if (view.equals(cmdStar2GetOrientation)) {
+                    star2timePhiTheta = Arrays.copyOfRange(data, 1, 9);
+                }
+                cmdListener = null;
+                ((TextView) view).setText(String.format("%02x%02x%02x%02x", data[5], data[6], data[7], data[8]));
+
+                if (epoch == 0) {
+                    long time = System.currentTimeMillis() / 1000;
+                    int remoteTime = ByteBuffer.wrap(data, 1, 4).getInt();
+                    epoch = time - remoteTime;
+                }
+            };
+        };
+
+        cmdStar1GetOrientation.setOnClickListener(clickListener);
+        cmdStar2GetOrientation.setOnClickListener(clickListener);
+
+        enter.setOnClickListener((View view) -> {
+            switch (selectedCommand) {
+                case R.id.cmd_zero:
+                    writeCmd(new byte[] {ZERO});
+                    break;
+                case R.id.cmd_goto:
+                    EditText v;
+
+                    ByteBuffer b = ByteBuffer.allocate(9);
+                    b.put(GOTO);
+                    b.putInt((int)(System.currentTimeMillis() / 1000 - epoch));
+                    try {
+                        v = findViewById(R.id.cmd_goto_options_asc);
+                        b.put(textToAngle(v));
+                        v = findViewById(R.id.cmd_goto_options_dec);
+                        b.put(textToAngle(v));
+                    } catch (NumberFormatException e) {
+                        return;
+                    }
+                    writeCmd(b.array());
+                    break;
+                case R.id.cmd_align:
+                    b = ByteBuffer.allocate(25);
+                    if (star1timePhiTheta == null || star2timePhiTheta == null)
+                        return;
+
+                    try {
+                        b.put(ALIGN);
+                        b.put(star1timePhiTheta);
+                        v = findViewById(R.id.star1asc);
+                        b.put(textToAngle(v));
+                        v = findViewById(R.id.star1dec);
+                        b.put(textToAngle(v));
+                        b.put(star2timePhiTheta);
+                        v = findViewById(R.id.star2asc);
+                        b.put(textToAngle(v));
+                        v = findViewById(R.id.star2dec);
+                        b.put(textToAngle(v));
+                    } catch (NumberFormatException e) {
+                        return;
+                    }
+                    writeCmd(b.array());
+                    break;
+            }
+        });
+
+        /*
+        enter.setOnClickListener((View view) -> {
             ByteBuffer b = ByteBuffer.allocate(25);
             b.put(ALIGN);
-            b.putInt(2352);
-            b.putShort((short)7264);
-            b.putShort((short)7264);
-            b.putShort((short)14412);
-            b.putShort((short)8374);
-            b.putInt(2418);
-            b.putShort((short)17221);
-            b.putShort((short)6590);
-            b.putShort((short)6910);
-            b.putShort((short)16250);
             try {
                 serialSocket.write(b.array());
             } catch (IOException e) {
@@ -213,7 +343,7 @@ public class MainActivity extends Activity implements SerialListener {
             }
         });
 
-        cmdGoto.setOnClickListener((View view) -> {
+        enter.setOnClickListener((View view) -> {
             ByteBuffer b = ByteBuffer.allocate(9);
             b.put(GOTO);
             b.putInt(3720);
@@ -225,5 +355,7 @@ public class MainActivity extends Activity implements SerialListener {
                 e.printStackTrace();
             }
         });
+
+         */
     }
 }

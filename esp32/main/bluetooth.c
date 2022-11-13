@@ -18,7 +18,7 @@
 
 static const esp_spp_mode_t esp_spp_mode = ESP_SPP_MODE_CB;
 static const esp_spp_sec_t sec_mask = ESP_SPP_SEC_AUTHENTICATE;
-static void (*command_handler)(uint8_t *cmd, int len) = NULL;
+static void (*command_handler)(esp_spp_cb_param_t *) = NULL;
 
 
 static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param) {
@@ -33,7 +33,7 @@ static void esp_spp_cb(esp_spp_cb_event_t event, esp_spp_cb_param_t *param) {
 			ESP_LOGI(SPP_TAG, "ESP_SPP_DATA_IND_EVT len=%d handle=%d",
 					param->data_ind.len, param->data_ind.handle);
 			esp_log_buffer_hex("",param->data_ind.data,param->data_ind.len);
-			command_handler(param->data_ind.data,param->data_ind.len);
+			command_handler(param);
 			break;
 		default:
 			ESP_LOGI(SPP_TAG, "SPP event: %d", event);
@@ -72,7 +72,7 @@ void esp_bt_gap_cb(esp_bt_gap_cb_event_t event, esp_bt_gap_cb_param_t *param) {
 	return;
 }
 
-void bluetooth_init(void (*ch)(uint8_t *cmd, int len)) {
+void bluetooth_init(void (*ch)(esp_spp_cb_param_t *)) {
 	command_handler = ch;
 
 	esp_err_t ret = nvs_flash_init();

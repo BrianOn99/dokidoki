@@ -7,6 +7,7 @@
 #include "driver/ledc.h"
 #include "bluetooth.h"
 #include "esp_log.h"
+#include "esp_spp_api.h"
 #include "takidoki.h"
 
 #define TAG "DOKI"
@@ -37,12 +38,14 @@
  * There is only 0.8 trigger per arc second, so precision to arc second is meaningless
  */
 #define QUANTA_PER_RAD 168500
+#define QUANTA_PER_REV 1171814
 #define NA_QUANTA (QUANTA_PER_RAD * 100)
 #define MOVE 1
 #define ALIGN 2
 #define GOTO 3
 #define ZERO 4
-#define TRACK 5
+#define GET_THETA_PHI 5
+#define TRACK 6
 
 static double SPEED_MAX = (1 << 7) - 1;
 
@@ -70,6 +73,13 @@ struct goto_cmd {
 	uint32_t time;
 	uint16_t asc;
 	uint16_t dec;
+};
+
+struct position_reply {
+	uint8_t reply;
+	uint32_t time;
+	uint16_t phi;
+	uint16_t theta;
 };
 
 struct direction {
@@ -177,12 +187,39 @@ static double u16r(uint16_t x)
 	return ((double) ntohs(x)) / UINT16_MAX * 2 * M_PI;
 }
 
-static void command_handler(uint8_t *cmd, int len)
+static double qu16(int x)
+{
+	double y = ((double) x) / QUANTA_PER_REV * UINT16_MAX;
+	return htons((uint16_t) y);
+}
+
+/* params are radian*/
+static void rotate(double to_theta, double to_phi)
+{
+	struct direction * axises[2] = {&HORIZONTAL, &VERTICAL};
+
+	HORIZONTAL.to_quanta = to_phi * QUANTA_PER_RAD;
+	VERTICAL.to_quanta = to_theta * QUANTA_PER_RAD;
+	for (int i=0; i<2;i++) {
+		int d;
+		if (axises[i]->to_quanta > axises[i]->quanta) {
+			d = 1;
+		} else if (axises[i]->to_quanta < axises[i]->quanta) {
+			d = -1;
+		} else {
+			continue;
+		}
+		set_pins_rotation(d, SPEED_MAX, axises[i]);
+	}
+}
+
+static void command_handler(esp_spp_cb_param_t *param)
 {
 	uint32_t strength;
 	signed char plus_minus;
+	uint8_t *cmd = param->data_ind.data;
+	int len = param->data_ind.len;
 
-	ESP_LOGI(TAG, "command_handler");
 	switch (cmd[0]) {
 	case MOVE:
 		if (len < 9) {
@@ -207,7 +244,7 @@ static void command_handler(uint8_t *cmd, int len)
 			{ntohl(s1->time), u16r(s1->phi), u16r(s1->theta), u16r(s1->asc), u16r(s1->dec)},
 			{ntohl(s2->time), u16r(s2->phi), u16r(s2->theta), u16r(s2->asc), u16r(s2->dec)},
 		};
-		align(stars);
+		printf("star1 %.2f %.2f %.2f %.2f %.2f\n", stars[0].time, stars[0].phi, stars[0].theta, stars[0].dec, stars[0].asc);
 		break;
 	case GOTO:
 		if (len < sizeof(struct goto_cmd)) {
@@ -223,6 +260,24 @@ static void command_handler(uint8_t *cmd, int len)
 		eq2tel(&phi, &theta, &target_star);
 		printf("TELESCOPE DIRECTION (DEG): %'.5f\n", theta);
 		printf("TELESCOPE ELEVATION (DEG): %'.5f\n", phi);
+		if (isnan(theta) || isnan(phi))
+			break;
+		rotate(theta, phi);
+		break;
+	case ZERO:
+		HORIZONTAL.quanta = 0;
+		VERTICAL.quanta = QUANTA_PER_REV / 4;
+		break;
+	case GET_THETA_PHI:
+		;
+		int64_t microsec = esp_timer_get_time();
+		struct position_reply reply = {
+			.reply = GET_THETA_PHI,
+			.time = htonl((int)(microsec / 1000000)),
+			.phi = qu16(HORIZONTAL.quanta),
+			.theta =qu16(VERTICAL.quanta),
+		};
+		esp_spp_write(param->open.handle, sizeof(struct position_reply), (uint8_t*) &reply);
 		break;
 	default:
 		ESP_LOGI(TAG, "Unknown cmd");
@@ -237,26 +292,6 @@ static void IRAM_ATTR rotory_isr_handler(struct direction *axis)
 	if (axis->to_quanta != NA_QUANTA && axis->quanta == axis->to_quanta) {
 		set_pins_rotation(0, 0, axis);
 		axis->to_quanta = NA_QUANTA;
-	}
-}
-
-/* params are radian*/
-static void rotate(double to_theta, double to_phi)
-{
-	struct direction * axises[2] = {&HORIZONTAL, &VERTICAL};
-
-	HORIZONTAL.to_quanta = to_phi * QUANTA_PER_RAD;
-	VERTICAL.to_quanta = to_theta * QUANTA_PER_RAD;
-	for (int i=0; i<2;i++) {
-		int d;
-		if (axises[i]->to_quanta > axises[i]->quanta) {
-			d = 1;
-		} else if (axises[i]->to_quanta < axises[i]->quanta) {
-			d = -1;
-		} else {
-			continue;
-		}
-		set_pins_rotation(d, SPEED_MAX, axises[i]);
 	}
 }
 
