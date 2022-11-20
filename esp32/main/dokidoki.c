@@ -165,6 +165,9 @@ static void normalize_strength(int32_t *x, uint32_t *strength, signed char *dire
 
 static void set_pins_rotation(signed char plus_minus, uint32_t strength, struct direction *axis)
 {
+	if (strength == 0)
+		axis->to_quanta = NA_QUANTA;
+
 	if (plus_minus > 0) {
 		gpio_set_level(axis->in_a, 0);
 		gpio_set_level(axis->in_b, 1);
@@ -200,6 +203,8 @@ static void rotate(double to_theta, double to_phi)
 
 	HORIZONTAL.to_quanta = to_phi * QUANTA_PER_RAD;
 	VERTICAL.to_quanta = to_theta * QUANTA_PER_RAD;
+	printf("HORIZONTAL quanta %d VERTICAL quanta %d\n", HORIZONTAL.quanta, VERTICAL.quanta);
+	printf("HORIZONTAL to %d VERTICAL to %d\n", HORIZONTAL.to_quanta, VERTICAL.to_quanta);
 	for (int i=0; i<2;i++) {
 		int d;
 		if (axises[i]->to_quanta > axises[i]->quanta) {
@@ -209,6 +214,9 @@ static void rotate(double to_theta, double to_phi)
 		} else {
 			continue;
 		}
+		if (i == 0)
+			d = d * -1;
+
 		set_pins_rotation(d, SPEED_MAX, axises[i]);
 	}
 }
@@ -244,7 +252,7 @@ static void command_handler(esp_spp_cb_param_t *param)
 			{ntohl(s1->time), u16r(s1->phi), u16r(s1->theta), u16r(s1->asc), u16r(s1->dec)},
 			{ntohl(s2->time), u16r(s2->phi), u16r(s2->theta), u16r(s2->asc), u16r(s2->dec)},
 		};
-		printf("star1 %.2f %.2f %.2f %.2f %.2f\n", stars[0].time, stars[0].phi, stars[0].theta, stars[0].dec, stars[0].asc);
+		align(stars);
 		break;
 	case GOTO:
 		if (len < sizeof(struct goto_cmd)) {
@@ -258,8 +266,8 @@ static void command_handler(esp_spp_cb_param_t *param)
 			.time = ntohl(d->time),
 		};
 		eq2tel(&phi, &theta, &target_star);
-		printf("TELESCOPE DIRECTION (DEG): %'.5f\n", theta);
-		printf("TELESCOPE ELEVATION (DEG): %'.5f\n", phi);
+		printf("TELESCOPE DIRECTION (RAD): %'.5f\n", phi);
+		printf("TELESCOPE ELEVATION (RAD): %'.5f\n", theta);
 		if (isnan(theta) || isnan(phi))
 			break;
 		rotate(theta, phi);
@@ -275,7 +283,7 @@ static void command_handler(esp_spp_cb_param_t *param)
 			.reply = GET_THETA_PHI,
 			.time = htonl((int)(microsec / 1000000)),
 			.phi = qu16(HORIZONTAL.quanta),
-			.theta =qu16(VERTICAL.quanta),
+			.theta = qu16(VERTICAL.quanta),
 		};
 		esp_spp_write(param->open.handle, sizeof(struct position_reply), (uint8_t*) &reply);
 		break;
@@ -287,11 +295,13 @@ static void command_handler(esp_spp_cb_param_t *param)
 static void IRAM_ATTR rotory_isr_handler(struct direction *axis)
 {
 	int level = gpio_get_level(axis->direction_sensor);
-	axis->quanta += level * 2 - 1;
+	if (axis == &VERTICAL)
+		axis->quanta += level * 2 - 1;
+	else
+		axis->quanta -= level * 2 - 1;
 
 	if (axis->to_quanta != NA_QUANTA && axis->quanta == axis->to_quanta) {
 		set_pins_rotation(0, 0, axis);
-		axis->to_quanta = NA_QUANTA;
 	}
 }
 

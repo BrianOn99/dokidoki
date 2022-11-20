@@ -27,6 +27,8 @@ public class MainActivity extends Activity implements SerialListener {
     private final byte ALIGN = 2;
     private final byte GOTO = 3;
     private final byte ZERO = 4;
+    private final byte ANGLE_DEC = 1;
+    private final byte ANGLE_ASC = 2;
     private final byte GET_THETA_PHI = 5;
     private SerialSocket serialSocket;
     private TextView connectionStatusView;
@@ -201,22 +203,37 @@ public class MainActivity extends Activity implements SerialListener {
         }
     }
 
-    private byte[] textToAngle(EditText v) {
+    private byte[] textToAngle(EditText v, byte angleType) {
         String s = v.getText().toString();
         String[] ss = s.split("\\+");
-        if (ss.length != 2) {
+        if (ss.length < 2) {
             v.setError("invalid");
             throw new NumberFormatException();
         }
-        double angle;
+        double angle, c, b, a = 0;
         try {
-            angle = Double.parseDouble(ss[0]) + Double.parseDouble(ss[1]) / 60.0;
+            c = Double.parseDouble(ss[0]);
+            b = Double.parseDouble(ss[1]);
+            if (ss.length == 3)
+                a = Double.parseDouble(ss[2]);
+            if (angleType == ANGLE_DEC) {
+                if (c < 0 || c > 90 || b < 0 || b > 60 || a < 0 || a > 60)
+                    throw new NumberFormatException();
+            }
+            if (angleType == ANGLE_ASC) {
+                if (c < 0 || c > 360 || b < 0 || b > 60 || a < 0 || a > 60)
+                    throw new NumberFormatException();
+            }
+            angle = c + b / 60.0 + a / 3600.0;
+            if (angleType == ANGLE_ASC)
+                angle = angle / 24 * 360;
+            Log.e("DOKILOG", String.valueOf(angle));
         } catch (NumberFormatException e) {
             v.setError("invalid");
             throw e;
         }
-        int a = (int) Math.round(angle / 360 * 65535);
-        return Arrays.copyOfRange(ByteBuffer.allocate(4).putInt(a).array(), 2, 4);
+        int k = (int) Math.round(angle / 360 * 65535);
+        return Arrays.copyOfRange(ByteBuffer.allocate(4).putInt(k).array(), 2, 4);
     }
 
     @SuppressLint("ClickableViewAccessibility")
@@ -299,9 +316,9 @@ public class MainActivity extends Activity implements SerialListener {
                     b.putInt((int)(System.currentTimeMillis() / 1000 - epoch));
                     try {
                         v = findViewById(R.id.cmd_goto_options_asc);
-                        b.put(textToAngle(v));
+                        b.put(textToAngle(v, ANGLE_ASC));
                         v = findViewById(R.id.cmd_goto_options_dec);
-                        b.put(textToAngle(v));
+                        b.put(textToAngle(v, ANGLE_DEC));
                     } catch (NumberFormatException e) {
                         return;
                     }
@@ -316,14 +333,14 @@ public class MainActivity extends Activity implements SerialListener {
                         b.put(ALIGN);
                         b.put(star1timePhiTheta);
                         v = findViewById(R.id.star1asc);
-                        b.put(textToAngle(v));
+                        b.put(textToAngle(v, ANGLE_ASC));
                         v = findViewById(R.id.star1dec);
-                        b.put(textToAngle(v));
+                        b.put(textToAngle(v, ANGLE_DEC));
                         b.put(star2timePhiTheta);
                         v = findViewById(R.id.star2asc);
-                        b.put(textToAngle(v));
+                        b.put(textToAngle(v, ANGLE_ASC));
                         v = findViewById(R.id.star2dec);
-                        b.put(textToAngle(v));
+                        b.put(textToAngle(v, ANGLE_DEC));
                     } catch (NumberFormatException e) {
                         return;
                     }

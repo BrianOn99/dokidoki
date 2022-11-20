@@ -155,8 +155,8 @@ void align(struct ref_star *ref_stars)
 #if 1 // standalone test
 
 struct ref_star stars[2] = {
-	{2352, 39.9/G, 39.9/G, 79.172/G, 45.998/G}, //"A AUR" 
-	{2418, 94.6/G, 36.2/G, 37.960/G, 89.264/G}, //"A UMI" 
+	{2352, 39.9/G, 39.9/G, 79.172/G, 45.998/G}, //"A AUR"
+	{2418, 94.6/G, 36.2/G, 37.960/G, 89.264/G}, //"A UMI"
 };
 
 int main()
@@ -167,9 +167,9 @@ int main()
 		.time = 3720,
 	};
 	double phi, theta;
-		printf("A %.2f %.2f %.2f %.2f %.2f\n", stars[0].phi, stars[0].theta, stars[0].dec, stars[0].asc, stars[0].time);
-		printf("B %.2f %.2f %.2f %.2f %.2f\n", stars[1].phi, stars[1].theta, stars[1].dec, stars[1].asc, stars[1].time);
-		printf("C %.2f %.2f %.2f\n", target_star.asc, target_star.dec, target_star.time);
+	printf("A %.2f %.2f %.2f %.2f %.2f\n", stars[0].phi, stars[0].theta, stars[0].dec, stars[0].asc, stars[0].time);
+	printf("B %.2f %.2f %.2f %.2f %.2f\n", stars[1].phi, stars[1].theta, stars[1].dec, stars[1].asc, stars[1].time);
+	printf("C %.2f %.2f %.2f\n", target_star.asc, target_star.dec, target_star.time);
 	align(stars);
 	eq2tel(&phi, &theta, &target_star);
 	printf("TELESCOPE DIRECTION (RAD): %'.5f\n", phi);
