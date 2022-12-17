@@ -92,6 +92,7 @@ struct direction {
 	ledc_channel_t ch;
 	int quanta; // telescope elevation / horizontal angle
 	int to_quanta; // GOTO target telescope elevation / horizontal angle
+	int increase_quanta_direction;
 };
 
 struct direction VERTICAL = {
@@ -102,6 +103,7 @@ struct direction VERTICAL = {
 	.rotory_sensor = GPIO_NUM_23,
 	.direction_sensor = GPIO_NUM_22,
 	.ch = LEDC_CHANNEL_0,
+	.increase_quanta_direction = 1,
 };
 
 struct direction HORIZONTAL = {
@@ -112,6 +114,7 @@ struct direction HORIZONTAL = {
 	.rotory_sensor = GPIO_NUM_36,
 	.direction_sensor = GPIO_NUM_39,
 	.ch = LEDC_CHANNEL_1,
+	.increase_quanta_direction = -1,
 };
 
 static void ledc_init(void)
@@ -196,9 +199,20 @@ static double qu16(int x)
 	return htons((uint16_t) y);
 }
 
+/* modulo assumed that -n < i < 2n */
+inline static int restricted_modulo(int i, int n) {
+	int m = i;
+	if (m >= n)
+		m -= n;
+	if (m < 0)
+		m += n;
+	return m;
+}
+
 /* params are radian*/
 static void rotate(double to_theta, double to_phi)
 {
+	int d, m;
 	struct direction * axises[2] = {&HORIZONTAL, &VERTICAL};
 
 	HORIZONTAL.to_quanta = to_phi * QUANTA_PER_RAD;
@@ -206,16 +220,15 @@ static void rotate(double to_theta, double to_phi)
 	printf("HORIZONTAL quanta %d VERTICAL quanta %d\n", HORIZONTAL.quanta, VERTICAL.quanta);
 	printf("HORIZONTAL to %d VERTICAL to %d\n", HORIZONTAL.to_quanta, VERTICAL.to_quanta);
 	for (int i=0; i<2;i++) {
-		int d;
-		if (axises[i]->to_quanta > axises[i]->quanta) {
-			d = 1;
-		} else if (axises[i]->to_quanta < axises[i]->quanta) {
-			d = -1;
+		m = restricted_modulo(axises[i]->to_quanta - axises[i]->quanta, QUANTA_PER_REV);
+
+		if (m < QUANTA_PER_REV / 2) {
+			d = axises[i]->increase_quanta_direction;
+		} else if (m > QUANTA_PER_REV / 2) {
+			d = axises[i]->increase_quanta_direction * -1;
 		} else {
 			continue;
 		}
-		if (i == 0)
-			d = d * -1;
 
 		set_pins_rotation(d, SPEED_MAX, axises[i]);
 	}
@@ -300,6 +313,7 @@ static void IRAM_ATTR rotory_isr_handler(struct direction *axis)
 	else
 		axis->quanta -= level * 2 - 1;
 
+	axis->quanta = restricted_modulo(axis->quanta, QUANTA_PER_REV);
 	if (axis->to_quanta != NA_QUANTA && axis->quanta == axis->to_quanta) {
 		set_pins_rotation(0, 0, axis);
 	}
@@ -339,11 +353,4 @@ void app_main()
 
 	gpio_set_level(VERTICAL.en, 0);
 	gpio_set_level(HORIZONTAL.en, 0);
-
-	//rotate(-M_PI/10, 0);
-
-	//struct align_cmd_star s1 = {2352, 7264, 7264, 14412, 8374};
-	//struct align_cmd_star s2 = {2418, 17221, 6590, 6910, 16250};
-	//struct align_cmd cmd = {'\x02', s1, s2};
-	//command_handler(&cmd, 99);
 }

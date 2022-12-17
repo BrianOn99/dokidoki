@@ -204,7 +204,15 @@ public class MainActivity extends Activity implements SerialListener {
     }
 
     private byte[] textToAngle(EditText v, byte angleType) {
+        int sign;
         String s = v.getText().toString();
+        if (s.startsWith("-")) {
+            sign = -1;
+            s = s.substring(1);
+        } else {
+            sign = 1;
+        }
+
         String[] ss = s.split("\\+");
         if (ss.length < 2) {
             v.setError("invalid");
@@ -221,10 +229,10 @@ public class MainActivity extends Activity implements SerialListener {
                     throw new NumberFormatException();
             }
             if (angleType == ANGLE_ASC) {
-                if (c < 0 || c > 360 || b < 0 || b > 60 || a < 0 || a > 60)
+                if (c < 0 || c > 24 || b < 0 || b > 60 || a < 0 || a > 60)
                     throw new NumberFormatException();
             }
-            angle = c + b / 60.0 + a / 3600.0;
+            angle = sign * (c + b / 60.0 + a / 3600.0);
             if (angleType == ANGLE_ASC)
                 angle = angle / 24 * 360;
             Log.e("DOKILOG", String.valueOf(angle));
@@ -348,31 +356,5 @@ public class MainActivity extends Activity implements SerialListener {
                     break;
             }
         });
-
-        /*
-        enter.setOnClickListener((View view) -> {
-            ByteBuffer b = ByteBuffer.allocate(25);
-            b.put(ALIGN);
-            try {
-                serialSocket.write(b.array());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        enter.setOnClickListener((View view) -> {
-            ByteBuffer b = ByteBuffer.allocate(9);
-            b.put(GOTO);
-            b.putInt(3720);
-            b.putShort((short)13021);
-            b.putShort((short)3107);
-            try {
-                serialSocket.write(b.array());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-         */
     }
 }
