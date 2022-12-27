@@ -38,7 +38,7 @@
  * There is only 0.8 trigger per arc second, so precision to arc second is meaningless
  */
 #define QUANTA_PER_RAD 168500
-#define QUANTA_PER_REV 1171814
+#define QUANTA_PER_REV 1058600
 #define NA_QUANTA (QUANTA_PER_RAD * 100)
 #define MOVE 1
 #define ALIGN 2
@@ -298,6 +298,7 @@ static void command_handler(esp_spp_cb_param_t *param)
 			.phi = qu16(HORIZONTAL.quanta),
 			.theta = qu16(VERTICAL.quanta),
 		};
+		ets_printf("HORIZONTAL %d VERTICAL %d\n", HORIZONTAL.quanta, VERTICAL.quanta);
 		esp_spp_write(param->open.handle, sizeof(struct position_reply), (uint8_t*) &reply);
 		break;
 	default:
