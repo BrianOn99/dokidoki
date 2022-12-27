@@ -1,0 +1,185 @@
+2022-11-13 16:19:45,431 [   2904]   WARN - pl.local.NativeFileWatcherImpl - /home/o/Documents/android-studio/bin/fsnotifier: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.33' not found (required by /home/o/Documents/android-studio/bin/fsnotifier) 
+2022-11-13 16:19:45,434 [   2907]   WARN - pl.local.NativeFileWatcherImpl - Watcher terminated with exit code 1 
+2022-11-13 16:19:45,441 [   2914]   WARN - pl.local.NativeFileWatcherImpl - /home/o/Documents/android-studio/bin/fsnotifier: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.33' not found (required by /home/o/Documents/android-studio/bin/fsnotifier) 
+2022-11-13 16:19:45,441 [   2914]   WARN - pl.local.NativeFileWatcherImpl - Watcher terminated with exit code 1 
+2022-11-13 16:19:45,442 [   2915]   WARN - pl.local.NativeFileWatcherImpl - /home/o/Documents/android-studio/bin/fsnotifier: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.33' not found (required by /home/o/Documents/android-studio/bin/fsnotifier) 
+2022-11-13 16:19:45,443 [   2916]   WARN - pl.local.NativeFileWatcherImpl - Watcher terminated with exit code 1 
+2022-11-13 16:19:45,445 [   2918]   WARN - pl.local.NativeFileWatcherImpl - /home/o/Documents/android-studio/bin/fsnotifier: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.33' not found (required by /home/o/Documents/android-studio/bin/fsnotifier) 
+2022-11-13 16:19:45,445 [   2918]   WARN - pl.local.NativeFileWatcherImpl - Watcher terminated with exit code 1 
+2022-11-13 16:19:45,446 [   2919]   WARN - pl.local.NativeFileWatcherImpl - /home/o/Documents/android-studio/bin/fsnotifier: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.33' not found (required by /home/o/Documents/android-studio/bin/fsnotifier) 
+2022-11-13 16:19:45,448 [   2921]   WARN - pl.local.NativeFileWatcherImpl - Watcher terminated with exit code 1 
+2022-11-13 16:19:45,451 [   2924]   WARN - pl.local.NativeFileWatcherImpl - /home/o/Documents/android-studio/bin/fsnotifier: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.33' not found (required by /home/o/Documents/android-studio/bin/fsnotifier) 
+2022-11-13 16:19:45,459 [   2932]   WARN - pl.local.NativeFileWatcherImpl - Watcher terminated with exit code 1 
+2022-11-13 16:19:45,460 [   2933]   WARN - pl.local.NativeFileWatcherImpl - /home/o/Documents/android-studio/bin/fsnotifier: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.33' not found (required by /home/o/Documents/android-studio/bin/fsnotifier) 
+2022-11-13 16:19:45,461 [   2934]   WARN - pl.local.NativeFileWatcherImpl - Watcher terminated with exit code 1 
+2022-11-13 16:19:45,463 [   2936]   WARN - pl.local.NativeFileWatcherImpl - /home/o/Documents/android-studio/bin/fsnotifier: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.33' not found (required by /home/o/Documents/android-studio/bin/fsnotifier) 
+2022-11-13 16:19:45,464 [   2937]   WARN - pl.local.NativeFileWatcherImpl - Watcher terminated with exit code 1 
+2022-11-13 16:19:45,466 [   2939]   WARN - pl.local.NativeFileWatcherImpl - /home/o/Documents/android-studio/bin/fsnotifier: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.33' not found (required by /home/o/Documents/android-studio/bin/fsnotifier) 
+2022-11-13 16:19:45,470 [   2943]   WARN - pl.local.NativeFileWatcherImpl - Watcher terminated with exit code 1 
+2022-11-13 16:19:45,472 [   2945]   WARN - pl.local.NativeFileWatcherImpl - /home/o/Documents/android-studio/bin/fsnotifier: /lib/x86_64-linux-gnu/libc.so.6: version `GLIBC_2.33' not found (required by /home/o/Documents/android-studio/bin/fsnotifier) 
+2022-11-13 16:19:45,473 [   2946]   WARN - pl.local.NativeFileWatcherImpl - Watcher terminated with exit code 1 
+2022-11-13 16:19:45,477 [   2950]   WARN - api.vfs.impl.local.FileWatcher - File watcher failed repeatedly and has been disabled 
+2022-11-13 16:19:48,687 [   6160]   WARN - #com.intellij.ui.jcef.JBCefApp - JCEF runtime library is not a JBR module (Use JBR bundled with the IDE) 
+2022-11-13 16:19:58,604 [  16077]   WARN - ctionSystem.impl.ActionUpdater - Slow (187 ms) `com.android.tools.idea.run.ui.ApplyChangesAction#update`. Consider speeding it up and/or implementing UpdateInBackground. 
+2022-11-13 16:19:59,723 [  17196]   WARN - ctionSystem.impl.ActionUpdater - 1102 ms to expand group child ToolbarRunGroup 
+2022-11-13 16:20:05,526 [  22999]   WARN - ctionSystem.impl.ActionUpdater - 1259 ms to expand group child EditorLangPopupMenu 
+2022-11-13 16:20:41,815 [  59288]   WARN - .diagnostic.PerformanceWatcher - UI was frozen for 15863ms, details saved to /home/o/.cache/Google/AndroidStudio2021.2/log/threadDumps-freeze-20221113-162030-AI-212.5712.43.2112.8609683-15sec 
+2022-11-13 16:20:50,404 [  67877]  ERROR - j.psi.stubs.StubTreeLoaderImpl - Outdated stub in index: file:///home/o/Documents/dokidoki/android/app/src/main/java/com/github/brianon99/dokidoki/MainActivity.java indexing timestamp = 1668327262177, binary = false, byte size = 10312, char size = 10419, doc=DocumentImpl[file:///home/o/Documents/dokidoki/android/app/src/main/java/com/github/brianon99/dokidoki/MainActivity.java], docSaved=true, wasIndexedAlready=true, queried at 1668327262177
+doc length=10312
+file length=10312
+cached PSI class com.intellij.psi.impl.source.PsiJavaFileImpl
+projects with file: 1
+physical file exists; length = 10312 
+java.lang.Exception
+	at com.intellij.psi.stubs.StubTreeLoaderImpl.diagnoseLengthMismatch(StubTreeLoaderImpl.java:174)
+	at com.intellij.psi.stubs.StubTreeLoaderImpl.checkLengthMatch(StubTreeLoaderImpl.java:140)
+	at com.intellij.psi.stubs.StubTreeLoaderImpl.readFromVFile(StubTreeLoaderImpl.java:107)
+	at com.intellij.psi.stubs.StubTreeLoaderImpl.readOrBuild(StubTreeLoaderImpl.java:39)
+	at com.intellij.psi.impl.source.PsiFileImpl.getStubTree(PsiFileImpl.java:631)
+	at com.intellij.psi.impl.source.PsiFileImpl.getGreenStubTree(PsiFileImpl.java:953)
+	at com.intellij.psi.impl.source.PsiFileImpl.getGreenStub(PsiFileImpl.java:608)
+	at com.intellij.psi.impl.source.PsiJavaFileBaseImpl.getClasses(PsiJavaFileBaseImpl.java:69)
+	at com.intellij.core.CoreJavaDirectoryService.getPsiClasses(CoreJavaDirectoryService.java:51)
+	at com.intellij.core.CoreJavaDirectoryService.getClasses(CoreJavaDirectoryService.java:37)
+	at com.intellij.psi.impl.PsiElementFinderImpl.getClasses(PsiElementFinderImpl.java:103)
+	at com.intellij.psi.impl.PsiElementFinderImpl.getClasses(PsiElementFinderImpl.java:95)
+	at com.intellij.psi.impl.JavaPsiFacadeImpl.getClasses(JavaPsiFacadeImpl.java:260)
+	at com.intellij.psi.impl.file.PsiPackageImpl.getClasses(PsiPackageImpl.java:142)
+	at com.intellij.psi.impl.file.PsiPackageImpl.processDeclarations(PsiPackageImpl.java:320)
+	at com.intellij.psi.impl.source.PsiJavaFileBaseImpl.processPackageDeclarations(PsiJavaFileBaseImpl.java:451)
+	at com.intellij.psi.impl.source.PsiJavaFileBaseImpl.processCurrentPackage(PsiJavaFileBaseImpl.java:395)
+	at com.intellij.psi.impl.source.PsiJavaFileBaseImpl.processOnDemandPackages(PsiJavaFileBaseImpl.java:373)
+	at com.intellij.psi.impl.source.PsiJavaFileBaseImpl.access$000(PsiJavaFileBaseImpl.java:49)
+	at com.intellij.psi.impl.source.PsiJavaFileBaseImpl$MyCacheBuilder.compute(PsiJavaFileBaseImpl.java:580)
+	at com.intellij.psi.impl.PsiCachedValueImpl.doCompute(PsiCachedValueImpl.java:39)
+	at com.intellij.util.CachedValueBase.lambda$getValueWithLock$3(CachedValueBase.java:227)
+	at com.intellij.util.CachedValueBase.computeData(CachedValueBase.java:42)
+	at com.intellij.util.CachedValueBase.lambda$getValueWithLock$4(CachedValueBase.java:227)
+	at com.intellij.openapi.util.RecursionManager$1.computePreventingRecursion(RecursionManager.java:114)
+	at com.intellij.openapi.util.RecursionGuard.doPreventingRecursion(RecursionGuard.java:43)
+	at com.intellij.openapi.util.RecursionManager.doPreventingRecursion(RecursionManager.java:68)
+	at com.intellij.util.CachedValueBase.getValueWithLock(CachedValueBase.java:228)
+	at com.intellij.psi.impl.PsiCachedValueImpl.getValue(PsiCachedValueImpl.java:28)
+	at com.intellij.psi.impl.source.PsiJavaFileBaseImpl.processDeclarations(PsiJavaFileBaseImpl.java:296)
+	at com.intellij.psi.scope.util.PsiScopesUtil.treeWalkUp(PsiScopesUtil.java:61)
+	at com.intellij.psi.scope.util.PsiScopesUtil.treeWalkUp(PsiScopesUtil.java:40)
+	at com.intellij.psi.scope.util.PsiScopesUtil.resolveAndWalk(PsiScopesUtil.java:207)
+	at com.intellij.psi.scope.util.PsiScopesUtil.resolveAndWalk(PsiScopesUtil.java:136)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl.resolve(PsiJavaCodeReferenceElementImpl.java:491)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl.resolve(PsiJavaCodeReferenceElementImpl.java:524)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl.access$100(PsiJavaCodeReferenceElementImpl.java:44)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl$OurGenericsResolver.resolve(PsiJavaCodeReferenceElementImpl.java:377)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl$OurGenericsResolver.resolve(PsiJavaCodeReferenceElementImpl.java:370)
+	at com.intellij.psi.impl.source.resolve.ResolveCache.lambda$resolveWithCaching$2(ResolveCache.java:184)
+	at com.intellij.openapi.util.Computable.get(Computable.java:18)
+	at com.intellij.psi.impl.source.resolve.ResolveCache.lambda$loggingResolver$4(ResolveCache.java:260)
+	at com.intellij.openapi.util.RecursionManager$1.computePreventingRecursion(RecursionManager.java:114)
+	at com.intellij.openapi.util.RecursionGuard.doPreventingRecursion(RecursionGuard.java:43)
+	at com.intellij.openapi.util.RecursionManager.doPreventingRecursion(RecursionManager.java:68)
+	at com.intellij.psi.impl.source.resolve.ResolveCache.resolve(ResolveCache.java:237)
+	at com.intellij.psi.impl.source.resolve.ResolveCache.resolveWithCaching(ResolveCache.java:184)
+	at com.intellij.psi.impl.PsiImplUtil.multiResolveImpl(PsiImplUtil.java:786)
+	at com.intellij.psi.impl.PsiImplUtil.multiResolveImpl(PsiImplUtil.java:778)
+	at com.intellij.psi.impl.PsiImplUtil.multiResolveImpl(PsiImplUtil.java:754)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl.multiResolve(PsiJavaCodeReferenceElementImpl.java:425)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl.advancedResolve(PsiJavaCodeReferenceElementImpl.java:419)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl.resolve(PsiJavaCodeReferenceElementImpl.java:354)
+	at com.intellij.psi.impl.source.resolve.ClassResolverProcessor.<init>(ClassResolverProcessor.java:55)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl.resolve(PsiJavaCodeReferenceElementImpl.java:490)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl.resolve(PsiJavaCodeReferenceElementImpl.java:524)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl.access$100(PsiJavaCodeReferenceElementImpl.java:44)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl$OurGenericsResolver.resolve(PsiJavaCodeReferenceElementImpl.java:377)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl$OurGenericsResolver.resolve(PsiJavaCodeReferenceElementImpl.java:370)
+	at com.intellij.psi.impl.source.resolve.ResolveCache.lambda$resolveWithCaching$2(ResolveCache.java:184)
+	at com.intellij.openapi.util.Computable.get(Computable.java:18)
+	at com.intellij.psi.impl.source.resolve.ResolveCache.lambda$loggingResolver$4(ResolveCache.java:260)
+	at com.intellij.openapi.util.RecursionManager$1.computePreventingRecursion(RecursionManager.java:114)
+	at com.intellij.openapi.util.RecursionGuard.doPreventingRecursion(RecursionGuard.java:43)
+	at com.intellij.openapi.util.RecursionManager.doPreventingRecursion(RecursionManager.java:68)
+	at com.intellij.psi.impl.source.resolve.ResolveCache.resolve(ResolveCache.java:237)
+	at com.intellij.psi.impl.source.resolve.ResolveCache.resolveWithCaching(ResolveCache.java:184)
+	at com.intellij.psi.impl.PsiImplUtil.multiResolveImpl(PsiImplUtil.java:786)
+	at com.intellij.psi.impl.PsiImplUtil.multiResolveImpl(PsiImplUtil.java:778)
+	at com.intellij.psi.impl.PsiImplUtil.multiResolveImpl(PsiImplUtil.java:754)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl.multiResolve(PsiJavaCodeReferenceElementImpl.java:425)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl.advancedResolve(PsiJavaCodeReferenceElementImpl.java:419)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl.resolve(PsiJavaCodeReferenceElementImpl.java:354)
+	at com.intellij.psi.impl.source.resolve.ClassResolverProcessor.<init>(ClassResolverProcessor.java:55)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl.resolve(PsiJavaCodeReferenceElementImpl.java:490)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl.resolve(PsiJavaCodeReferenceElementImpl.java:524)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl.access$100(PsiJavaCodeReferenceElementImpl.java:44)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl$OurGenericsResolver.resolve(PsiJavaCodeReferenceElementImpl.java:377)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl$OurGenericsResolver.resolve(PsiJavaCodeReferenceElementImpl.java:370)
+	at com.intellij.psi.impl.source.resolve.ResolveCache.lambda$resolveWithCaching$2(ResolveCache.java:184)
+	at com.intellij.openapi.util.Computable.get(Computable.java:18)
+	at com.intellij.psi.impl.source.resolve.ResolveCache.lambda$loggingResolver$4(ResolveCache.java:260)
+	at com.intellij.openapi.util.RecursionManager$1.computePreventingRecursion(RecursionManager.java:114)
+	at com.intellij.openapi.util.RecursionGuard.doPreventingRecursion(RecursionGuard.java:43)
+	at com.intellij.openapi.util.RecursionManager.doPreventingRecursion(RecursionManager.java:68)
+	at com.intellij.psi.impl.source.resolve.ResolveCache.resolve(ResolveCache.java:237)
+	at com.intellij.psi.impl.source.resolve.ResolveCache.resolveWithCaching(ResolveCache.java:184)
+	at com.intellij.psi.impl.PsiImplUtil.multiResolveImpl(PsiImplUtil.java:786)
+	at com.intellij.psi.impl.PsiImplUtil.multiResolveImpl(PsiImplUtil.java:778)
+	at com.intellij.psi.impl.PsiImplUtil.multiResolveImpl(PsiImplUtil.java:754)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl.multiResolve(PsiJavaCodeReferenceElementImpl.java:425)
+	at com.intellij.psi.impl.source.PsiJavaCodeReferenceElementImpl.advancedResolve(PsiJavaCodeReferenceElementImpl.java:419)
+	at com.intellij.psi.impl.source.PsiClassReferenceType.resolveGenerics(PsiClassReferenceType.java:177)
+	at com.intellij.psi.impl.source.PsiClassReferenceType.resolve(PsiClassReferenceType.java:121)
+	at com.intellij.psi.impl.PsiClassImplUtil.getSuperClass(PsiClassImplUtil.java:714)
+	at com.intellij.psi.impl.source.PsiClassImpl.getSuperClass(PsiClassImpl.java:205)
+	at com.intellij.codeInsight.ClassUtil.getAnyMethodToImplement(ClassUtil.java:33)
+	at com.intellij.codeInsight.ClassUtil.getAnyAbstractMethod(ClassUtil.java:19)
+	at com.intellij.codeInsight.daemon.impl.analysis.HighlightClassUtil.checkClassWithAbstractMethods(HighlightClassUtil.java:81)
+	at com.intellij.codeInsight.daemon.impl.analysis.HighlightClassUtil.checkClassWithAbstractMethods(HighlightClassUtil.java:77)
+	at com.intellij.codeInsight.daemon.impl.analysis.HighlightClassUtil.checkClassMustBeAbstract(HighlightClassUtil.java:144)
+	at com.intellij.codeInsight.daemon.impl.analysis.HighlightVisitorImpl.visitModifierList(HighlightVisitorImpl.java:1075)
+	at com.intellij.psi.impl.source.PsiModifierListImpl.accept(PsiModifierListImpl.java:323)
+	at com.intellij.codeInsight.daemon.impl.analysis.HighlightVisitorImpl.visit(HighlightVisitorImpl.java:189)
+	at com.intellij.codeInsight.daemon.impl.GeneralHighlightingPass.runVisitors(GeneralHighlightingPass.java:341)
+	at com.intellij.codeInsight.daemon.impl.GeneralHighlightingPass.lambda$collectHighlights$5(GeneralHighlightingPass.java:280)
+	at com.intellij.codeInsight.daemon.impl.GeneralHighlightingPass.analyzeByVisitors(GeneralHighlightingPass.java:300)
+	at com.intellij.codeInsight.daemon.impl.GeneralHighlightingPass.lambda$analyzeByVisitors$6(GeneralHighlightingPass.java:303)
+	at com.intellij.codeInsight.daemon.impl.analysis.HighlightVisitorImpl.analyze(HighlightVisitorImpl.java:218)
+	at com.intellij.codeInsight.daemon.impl.GeneralHighlightingPass.analyzeByVisitors(GeneralHighlightingPass.java:303)
+	at com.intellij.codeInsight.daemon.impl.GeneralHighlightingPass.lambda$analyzeByVisitors$6(GeneralHighlightingPass.java:303)
+	at com.intellij.codeInsight.daemon.impl.DefaultHighlightVisitor.analyze(DefaultHighlightVisitor.java:94)
+	at com.intellij.codeInsight.daemon.impl.GeneralHighlightingPass.analyzeByVisitors(GeneralHighlightingPass.java:303)
+	at com.intellij.codeInsight.daemon.impl.GeneralHighlightingPass.collectHighlights(GeneralHighlightingPass.java:271)
+	at com.intellij.codeInsight.daemon.impl.GeneralHighlightingPass.collectInformationWithProgress(GeneralHighlightingPass.java:213)
+	at com.intellij.codeInsight.daemon.impl.ProgressableTextEditorHighlightingPass.doCollectInformation(ProgressableTextEditorHighlightingPass.java:84)
+	at com.intellij.codeHighlighting.TextEditorHighlightingPass.collectInformation(TextEditorHighlightingPass.java:56)
+	at com.intellij.codeInsight.daemon.impl.PassExecutorService$ScheduledPass.lambda$doRun$1(PassExecutorService.java:414)
+	at com.intellij.openapi.application.impl.ApplicationImpl.tryRunReadAction(ApplicationImpl.java:1078)
+	at com.intellij.codeInsight.daemon.impl.PassExecutorService$ScheduledPass.lambda$doRun$2(PassExecutorService.java:407)
+	at com.intellij.openapi.progress.impl.CoreProgressManager.registerIndicatorAndRun(CoreProgressManager.java:705)
+	at com.intellij.openapi.progress.impl.CoreProgressManager.executeProcessUnderProgress(CoreProgressManager.java:647)
+	at com.intellij.openapi.progress.impl.ProgressManagerImpl.executeProcessUnderProgress(ProgressManagerImpl.java:63)
+	at com.intellij.codeInsight.daemon.impl.PassExecutorService$ScheduledPass.doRun(PassExecutorService.java:406)
+	at com.intellij.codeInsight.daemon.impl.PassExecutorService$ScheduledPass.lambda$run$0(PassExecutorService.java:382)
+	at com.intellij.openapi.application.impl.ReadMostlyRWLock.executeByImpatientReader(ReadMostlyRWLock.java:174)
+	at com.intellij.openapi.application.impl.ApplicationImpl.executeByImpatientReader(ApplicationImpl.java:183)
+	at com.intellij.codeInsight.daemon.impl.PassExecutorService$ScheduledPass.run(PassExecutorService.java:380)
+	at com.intellij.concurrency.JobLauncherImpl$VoidForkJoinTask$1.exec(JobLauncherImpl.java:188)
+	at java.base/java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:290)
+	at java.base/java.util.concurrent.ForkJoinPool$WorkQueue.topLevelExec(ForkJoinPool.java:1020)
+	at java.base/java.util.concurrent.ForkJoinPool.scan(ForkJoinPool.java:1656)
+	at java.base/java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1594)
+	at java.base/java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:183)
+2022-11-13 16:20:50,422 [  67895]  ERROR - j.psi.stubs.StubTreeLoaderImpl - Android Studio Chipmunk | 2021.2.1 Patch 1  Build #AI-212.5712.43.2112.8609683 
+2022-11-13 16:20:50,431 [  67904]  ERROR - j.psi.stubs.StubTreeLoaderImpl - JDK: 11.0.12; VM: OpenJDK 64-Bit Server VM; Vendor: JetBrains s.r.o. 
+2022-11-13 16:20:50,431 [  67904]  ERROR - j.psi.stubs.StubTreeLoaderImpl - OS: Linux 
+2022-11-13 16:20:50,432 [  67905]  ERROR - j.psi.stubs.StubTreeLoaderImpl - Last Action:  
+java.lang.OutOfMemoryError: Java heap space
+Dumping heap to /home/o/java_error_in_studio_.hprof ...
+Unable to create /home/o/java_error_in_studio_.hprof: File exists
+2022-11-13 16:25:47,631 [ 365104]   WARN - droidStudioSystemHealthMonitor - Forced clear of soft/weak references. Reason: FrequentLowMemoryNotification, freed memory: 258MB 
+2022-11-13 16:33:21,881 [ 819354]   WARN - ctionSystem.impl.ActionUpdater - 2501 ms to expand group child android.deploy.ApplyChanges 
+2022-11-13 16:33:21,910 [ 819383]   WARN - ctionSystem.impl.ActionUpdater - 2548 ms to expand group child Android.InstantRunActions 
+2022-11-13 16:33:21,915 [ 819388]   WARN - ctionSystem.impl.ActionUpdater - 2558 ms to expand group child RunnerActions 
+2022-11-13 16:33:21,915 [ 819388]   WARN - ctionSystem.impl.ActionUpdater - 2566 ms to expand group child ToolbarRunGroup 
+2022-11-13 16:33:24,230 [ 821703]   WARN - ctionSystem.impl.ActionUpdater - 2079 ms to expand group child TabList 
+2022-11-13 16:33:51,113 [ 848586]   WARN - .diagnostic.PerformanceWatcher - UI was frozen for 15392ms, details saved to /home/o/.cache/Google/AndroidStudio2021.2/log/threadDumps-freeze-20221113-163340-AI-212.5712.43.2112.8609683-15sec 
+2022-11-13 16:34:38,730 [ 896203]   WARN - .diagnostic.PerformanceWatcher - UI was frozen for 42281ms, details saved to /home/o/.cache/Google/AndroidStudio2021.2/log/threadDumps-freeze-20221113-163401-AI-212.5712.43.2112.8609683-42sec 
+2022-11-13 16:34:39,251 [ 896724]   WARN - ctionSystem.impl.ActionUpdater - 47556 ms to expand group child TabList 
+2022-11-13 16:34:56,784 [ 914257]   WARN - .diagnostic.PerformanceWatcher - UI was frozen for 13988ms, details saved to /home/o/.cache/Google/AndroidStudio2021.2/log/threadDumps-freeze-20221113-163447-AI-212.5712.43.2112.8609683-13sec 
+2022-11-13 16:35:00,721 [ 918194]   WARN - ctionSystem.impl.ActionUpdater - 69089 ms to expand group child TabList 
