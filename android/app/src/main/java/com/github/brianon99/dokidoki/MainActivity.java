@@ -298,7 +298,8 @@ public class MainActivity extends Activity implements SerialListener {
                     star2timePhiTheta = Arrays.copyOfRange(data, 1, 9);
                 }
                 cmdListener = null;
-                ((TextView) view).setText(String.format("%02x%02x%02x%02x", data[5], data[6], data[7], data[8]));
+                ByteBuffer replyByteBuffer = ByteBuffer.wrap(data);
+                ((TextView) view).setText(String.format("%d %d", (int)replyByteBuffer.getChar(5), (int)replyByteBuffer.getChar(7)));
 
                 if (epoch == 0) {
                     long time = System.currentTimeMillis() / 1000;
