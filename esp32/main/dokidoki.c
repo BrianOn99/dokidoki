@@ -111,8 +111,8 @@ struct direction HORIZONTAL = {
 	.in_a = GPIO_NUM_27,
 	.in_b = GPIO_NUM_14,
 	.en = GPIO_NUM_13,
-	.rotory_sensor = GPIO_NUM_36,
-	.direction_sensor = GPIO_NUM_39,
+	.rotory_sensor = GPIO_NUM_33,
+	.direction_sensor = GPIO_NUM_32,
 	.ch = LEDC_CHANNEL_1,
 	.increase_quanta_direction = -1,
 };
