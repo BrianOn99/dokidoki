@@ -8,6 +8,7 @@
 #include "bluetooth.h"
 #include "esp_log.h"
 #include "esp_spp_api.h"
+#include "esp_timer.h"
 #include "takidoki.h"
 
 #define TAG "DOKI"
@@ -28,7 +29,7 @@
 #define ntohs(x) htons(x)
 
 #define ESP_INTR_FLAG_DEFAULT 0
-#define SPEED_RESOLUTION 7
+#define SPEED_RESOLUTION 9
 /*
  * From experiment, number of triggers per 7 full rotations of motor is
  * 7412611 +- 1000 for vertical motor
@@ -47,7 +48,7 @@
 #define GET_THETA_PHI 5
 #define TRACK 6
 
-static double SPEED_MAX = (1 << 7) - 1;
+static double SPEED_MAX = (1 << SPEED_RESOLUTION) - 1;
 
 /*
  * each 0-2PI is mapped to 0-INT16_MAX
@@ -103,6 +104,7 @@ struct direction VERTICAL = {
 	.rotory_sensor = GPIO_NUM_23,
 	.direction_sensor = GPIO_NUM_22,
 	.ch = LEDC_CHANNEL_0,
+	.to_quanta = NA_QUANTA,
 	.increase_quanta_direction = 1,
 };
 
@@ -114,6 +116,7 @@ struct direction HORIZONTAL = {
 	.rotory_sensor = GPIO_NUM_33,
 	.direction_sensor = GPIO_NUM_32,
 	.ch = LEDC_CHANNEL_1,
+	.to_quanta = NA_QUANTA,
 	.increase_quanta_direction = -1,
 };
 
@@ -135,7 +138,7 @@ static void ledc_init(void)
 
 	ledc_timer_config_t ledc_timer = {
 		.duty_resolution = SPEED_RESOLUTION, // resolution of PWM duty
-		.freq_hz = 100,                      // frequency of PWM signal
+		.freq_hz = 4,                      // frequency of PWM signal
 		.speed_mode = LEDC_LOW_SPEED_MODE,           // timer mode
 		.timer_num = LEDC_TIMER_1,            // timer index
 		.clk_cfg = LEDC_AUTO_CLK,              // Auto select the source clock
@@ -168,13 +171,16 @@ static void normalize_strength(int32_t *x, uint32_t *strength, signed char *dire
 
 static void set_pins_rotation(signed char plus_minus, uint32_t strength, struct direction *axis)
 {
+	ets_printf("SET PINS ROT\n");
 	if (strength == 0)
 		axis->to_quanta = NA_QUANTA;
 
 	if (plus_minus > 0) {
+		ets_printf("SET %d 0\n", axis->in_a);
 		gpio_set_level(axis->in_a, 0);
 		gpio_set_level(axis->in_b, 1);
-	} else if (plus_minus <0) {
+	} else if (plus_minus < 0) {
+		ets_printf("SET %d 1\n", axis->in_a);
 		gpio_set_level(axis->in_a, 1);
 		gpio_set_level(axis->in_b, 0);
 	} else {
@@ -320,6 +326,20 @@ static void IRAM_ATTR rotory_isr_handler(struct direction *axis)
 	}
 }
 
+static uint32_t count = 0;
+static uint32_t stren = 4;
+
+void timer_callback(void *param)
+{
+	ets_printf("%d STRENGTH %d HORIZONTAL %d VERTICAL %d\n", count++, stren, HORIZONTAL.quanta, VERTICAL.quanta);
+}
+
+void vtimer_callback(void *param)
+{
+	stren++;
+	set_pins_rotation(1, stren, &VERTICAL);
+}
+
 void app_main()
 {
 	gpio_config_t io_conf = {};
@@ -354,4 +374,19 @@ void app_main()
 
 	gpio_set_level(VERTICAL.en, 0);
 	gpio_set_level(HORIZONTAL.en, 0);
+
+
+	const esp_timer_create_args_t my_timer_args = {
+		.callback = &timer_callback,
+		.name = "My Timer"};
+	esp_timer_handle_t timer_handler;
+	ESP_ERROR_CHECK(esp_timer_create(&my_timer_args, &timer_handler));
+	ESP_ERROR_CHECK(esp_timer_start_periodic(timer_handler, 1000000));
+
+	const esp_timer_create_args_t vtargs = {
+		.callback = &vtimer_callback,
+		.name = "v"};
+	esp_timer_handle_t vtimer_handler;
+	ESP_ERROR_CHECK(esp_timer_create(&vtargs, &vtimer_handler));
+	ESP_ERROR_CHECK(esp_timer_start_periodic(vtimer_handler, 14000000));
 }
