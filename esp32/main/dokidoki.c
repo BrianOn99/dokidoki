@@ -240,6 +240,51 @@ static void rotate(double to_theta, double to_phi)
 	}
 }
 
+void track()
+{
+	struct celestial_star cstar;
+	double phi = HORIZONTAL.quanta / QUANTA_PER_RAD;
+	double theta = VERTICAL.quanta / QUANTA_PER_RAD;
+	double strength;
+	signed char d;
+	double req_speed;
+
+	cstar.time = esp_timer_get_time() / 1000000;
+	tel2eq(phi, theta, &cstar);
+	cstar.time += 5;
+	eq2tel(&phi, &theta, &cstar);
+
+	HORIZONTAL.to_quanta = phi * QUANTA_PER_RAD;
+	VERTICAL.to_quanta = theta * QUANTA_PER_RAD;
+	struct direction * axises[2] = {&HORIZONTAL, &VERTICAL};
+
+	for (int i=0; i<2;i++) {
+		if (axises[i]->to_quanta > axises[i]->quanta) {
+			d = axises[i]->increase_quanta_direction;
+		} else {
+			d = axises[i]->increase_quanta_direction * -1;
+		}
+
+		req_speed = abs(axises[i]->to_quanta - axises[i]->quanta) / 5.0;
+		if (req_speed < 2) {
+			strength = 0;
+		} else if (req_speed < 4) {
+			strength = 7;
+		} else if (req_speed < 8) {
+			strength = 8;
+		} else if (req_speed < 10) {
+			strength = 10;
+		} else if (req_speed < 12) {
+			strength = 12;
+		} else {
+			strength = 14;
+		}
+		set_pins_rotation(d, strength, axises[i]);
+
+		axises[i]->to_quanta = NA_QUANTA;
+	}
+}
+
 static void command_handler(esp_spp_cb_param_t *param)
 {
 	uint32_t strength;
@@ -307,6 +352,9 @@ static void command_handler(esp_spp_cb_param_t *param)
 		ets_printf("HORIZONTAL %d VERTICAL %d\n", HORIZONTAL.quanta, VERTICAL.quanta);
 		esp_spp_write(param->open.handle, sizeof(struct position_reply), (uint8_t*) &reply);
 		break;
+	case TRACK:
+		track();
+		break;
 	default:
 		ESP_LOGI(TAG, "Unknown cmd");
 	}
@@ -324,20 +372,6 @@ static void IRAM_ATTR rotory_isr_handler(struct direction *axis)
 	if (axis->to_quanta != NA_QUANTA && axis->quanta == axis->to_quanta) {
 		set_pins_rotation(0, 0, axis);
 	}
-}
-
-static uint32_t count = 0;
-static uint32_t stren = 4;
-
-void timer_callback(void *param)
-{
-	ets_printf("%d STRENGTH %d HORIZONTAL %d VERTICAL %d\n", count++, stren, HORIZONTAL.quanta, VERTICAL.quanta);
-}
-
-void vtimer_callback(void *param)
-{
-	stren++;
-	set_pins_rotation(1, stren, &VERTICAL);
 }
 
 void app_main()
@@ -374,19 +408,4 @@ void app_main()
 
 	gpio_set_level(VERTICAL.en, 0);
 	gpio_set_level(HORIZONTAL.en, 0);
-
-
-	const esp_timer_create_args_t my_timer_args = {
-		.callback = &timer_callback,
-		.name = "My Timer"};
-	esp_timer_handle_t timer_handler;
-	ESP_ERROR_CHECK(esp_timer_create(&my_timer_args, &timer_handler));
-	ESP_ERROR_CHECK(esp_timer_start_periodic(timer_handler, 1000000));
-
-	const esp_timer_create_args_t vtargs = {
-		.callback = &vtimer_callback,
-		.name = "v"};
-	esp_timer_handle_t vtimer_handler;
-	ESP_ERROR_CHECK(esp_timer_create(&vtargs, &vtimer_handler));
-	ESP_ERROR_CHECK(esp_timer_start_periodic(vtimer_handler, 14000000));
 }

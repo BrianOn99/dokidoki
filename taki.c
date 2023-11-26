@@ -157,6 +157,33 @@ void eq2tel() {  // taki.bas 485
 	printf("TELESCOPE DIRECTION (DEG): %'.2f\n", a_app);
 }
 
+void tel2eq(double f, double h) { // taki.bas 570
+	int i;
+	double v_t[3];
+	double v_c[3];
+	struct celestial_star cstar = {
+		.time = 62.0,
+	};
+
+	f = f / G;
+	h = (h + Z3) / G;
+	v_t[0] = cos(f)*cos(h)-sin(f)*(Z2/G) + sin(f)*sin(h)*(Z1/G);
+	v_t[1] = sin(f)*cos(h)+cos(f)*(Z2/G) - cos(f)*sin(h)*(Z1/G);
+	v_t[2] = sin(h);
+
+	for (i=0; i<3; i++) {
+		v_c[i] = Q[i][0]*v_t[0] + Q[i][1]*v_t[1] + Q[i][2]*v_t[2];
+	}
+	angle(&h, &f, v_c);
+	cstar.asc = f + K * cstar.time*0.25;
+	cstar.asc = cstar.asc - ((int)(cstar.asc/360)) * 360;
+	cstar.dec = h;
+
+	printf("STAR ASC (DEG): %'.2f\n", cstar.asc);
+	printf("STAR DEC (DEG): %'.2f\n", cstar.dec);
+}
+
+
 int main() {
 	double d, b, f, h;
 	for (int i=0; i<2; i++) {
@@ -190,6 +217,7 @@ int main() {
 				R[i][j] = R[i][j] + Y[i][k]*Q[k][j];  // line 400
 	inv(Q, R);  // taki.bas 450
 #if 1
+	//tel2eq(359.986, 40.309);
 	eq2tel();
 #endif
 

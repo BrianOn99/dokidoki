@@ -27,18 +27,22 @@ public class MainActivity extends Activity implements SerialListener {
     private final byte ALIGN = 2;
     private final byte GOTO = 3;
     private final byte ZERO = 4;
+    private final byte GET_THETA_PHI = 5;
+    private final byte TRACK = 6;
     private final byte ANGLE_DEC = 1;
     private final byte ANGLE_ASC = 2;
-    private final byte GET_THETA_PHI = 5;
     private SerialSocket serialSocket;
     private TextView connectionStatusView;
     private Connected connectionStatus = Connected.False;
     private String KEY_STATE = "KEY_STATE";
     private ToggleButton speedToogle;
     private Listener cmdListener;
+    private TextView vSpeed;
+    private TextView hSpeed;
     private byte[] star1timePhiTheta;
     private byte[] star2timePhiTheta;
     private int selectedCommand;
+    private int speed[] = {0,0};
     long epoch = 0;
 
     interface Listener {
@@ -150,34 +154,30 @@ public class MainActivity extends Activity implements SerialListener {
             v.setOnTouchListener((View _v, MotionEvent event) -> {
                 ByteBuffer b = ByteBuffer.allocate(9);
                 b.put(MOV);
-                int speed = Integer.MAX_VALUE;
-                if (speedToogle.isChecked()) {
-                    speed = speed / 3;
-                }
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
-                        if (btnDirection[1] == 1)
-                            b.putInt(speed);
-                        else if (btnDirection[1] == -1)
-                            b.putInt(-speed);
-                        else
-                            b.putInt(0);
-
-                        if (btnDirection[2] == 1)
-                            b.putInt(speed);
-                        else if (btnDirection[2] == -1)
-                            b.putInt(-speed);
-                        else
-                            b.putInt(0);
-
+                        if (speedToogle.isChecked()) {
+                            speed[0] += btnDirection[1];
+                            speed[1] += btnDirection[2];
+                            hSpeed.setText(String.valueOf(speed[0]));
+                            vSpeed.setText(String.valueOf(speed[1]));
+                        } else {
+                            speed[0] = Integer.MAX_VALUE * btnDirection[1];
+                            speed[1] = Integer.MAX_VALUE * btnDirection[2];
+                        }
+                        b.putInt((int)((speed[0]/128.0)*Integer.MAX_VALUE));
+                        b.putInt((int)((speed[1]/128.0)*Integer.MAX_VALUE));
                         try {
                             serialSocket.write(b.array());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
                         break;
-
                     case MotionEvent.ACTION_UP:
+                        if (speedToogle.isChecked()) {
+                            _v.performClick();
+                            break;
+                        }
                         b.putInt(0);
                         b.putInt(0);
                         _v.performClick();
@@ -255,6 +255,8 @@ public class MainActivity extends Activity implements SerialListener {
         RadioGroup cmdGroup = findViewById(R.id.cmd_group);
         View cmdStar1GetOrientation = findViewById(R.id.star1_get_orientation);
         View cmdStar2GetOrientation = findViewById(R.id.star2_get_orientation);
+        vSpeed = findViewById(R.id.vspeed);
+        hSpeed = findViewById(R.id.hspeed);
 
         if (savedInstanceState != null) {
             this.updateStatus((Connected) savedInstanceState.getSerializable(KEY_STATE));
@@ -264,6 +266,7 @@ public class MainActivity extends Activity implements SerialListener {
             {R.id.cmd_zero, -1},
             {R.id.cmd_align, R.id.cmd_align_options},
             {R.id.cmd_goto, R.id.cmd_goto_options},
+            {R.id.cmd_track, -1},
         };
 
         cmdGroup.setOnCheckedChangeListener((RadioGroup group, int checkedId) -> {
@@ -355,6 +358,19 @@ public class MainActivity extends Activity implements SerialListener {
                     }
                     writeCmd(b.array());
                     break;
+                case R.id.cmd_track:
+                    writeCmd(new byte[] {TRACK});
+                    break;
+            }
+        });
+
+        speedToogle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                speed[0] = 0;
+                speed[1] = 0;
+                hSpeed.setText(String.valueOf(speed[0]));
+                vSpeed.setText(String.valueOf(speed[1]));
             }
         });
     }

@@ -53,11 +53,24 @@
             android:layout_weight="1"
             />
 
-        <View
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            tools:ignore="ButtonStyle,SpeakableTextPresentCheck" />
+            android:orientation="vertical"
+            android:layout_weight="1">
+            <TextView
+                android:id="@+id/vspeed"
+                android:text="0"
+                android:textSize="26dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/hspeed"
+                android:text="0"
+                android:textSize="26dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
 
         <Button
             android:id="@+id/btn6"
@@ -222,6 +235,14 @@
                 android:layout_toRightOf="@id/cmd_align"
                 android:layout_alignParentBottom="true"
                 android:text="goto">
+            </RadioButton>
+            <RadioButton
+                android:id="@+id/cmd_track"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/cmd_goto"
+                android:layout_alignParentBottom="true"
+                android:text="autotrack">
             </RadioButton>
         </RadioGroup>
         <Button

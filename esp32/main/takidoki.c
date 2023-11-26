@@ -9,9 +9,9 @@
 
 #define K 1.002738 // siderial time
 #define G 57.2958 // radian <-> degree
-#define Z1 (-0.04/G)
-#define Z2 (0.4/G)
-#define Z3 (-1.63/G)
+#define Z1 (-0.0/G)
+#define Z2 (0.0/G)
+#define Z3 (-0.0/G)
 
 double R[3][3]; // T, equation 5 LHS
 double Q[3][3]; // invert of X, invert of R (taki.bas 370, 450)
@@ -109,7 +109,7 @@ void eq2tel(double *f, double *h, struct celestial_star *cstar)  // taki.bas 485
 	int i;
 
 	d = cstar->dec;
-	b = cstar->asc - K * cstar->time * 0.000072722;
+	b = cstar->asc - K * cstar->time * 0.000072722; //.25 / 60 / G
 	v_t[0] = cos(d) * cos(b);
 	v_t[1] = cos(d) * sin(b);
 	v_t[2] = sin(d);
@@ -117,6 +117,26 @@ void eq2tel(double *f, double *h, struct celestial_star *cstar)  // taki.bas 485
 		v_c[i] = R[i][0]*v_t[0] + R[i][1]*v_t[1] + R[i][2]*v_t[2];
 	}
 	apparent_angle(f, h, v_c);
+}
+
+void tel2eq(double f, double h, struct celestial_star *cstar)  // taki.bas 570
+{
+	int i;
+	double v_t[3];
+	double v_c[3];
+
+	h = h + Z3;
+	v_t[0] = cos(f)*cos(h)-sin(f)*Z2 + sin(f)*sin(h)*Z1;
+	v_t[1] = sin(f)*cos(h)+cos(f)*Z2 - cos(f)*sin(h)*Z1;
+	v_t[2] = sin(h);
+
+	for (i=0; i<3; i++) {
+		v_c[i] = Q[i][0]*v_t[0] + Q[i][1]*v_t[1] + Q[i][2]*v_t[2];
+	}
+	angle(&h, &f, v_c);
+	cstar->asc = f + K * cstar->time*0.25;
+	cstar->asc = cstar->asc - ((int)(cstar->asc/(2*M_PI))) * (2*M_PI);
+	cstar->dec = h - Z3;
 }
 
 void align(struct ref_star *ref_stars)
