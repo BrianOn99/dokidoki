@@ -161,12 +161,14 @@ public class MainActivity extends Activity implements SerialListener {
                             speed[1] += btnDirection[2];
                             hSpeed.setText(String.valueOf(speed[0]));
                             vSpeed.setText(String.valueOf(speed[1]));
+                            b.putInt((int)((speed[0]/128.0)*Integer.MAX_VALUE));
+                            b.putInt((int)((speed[1]/128.0)*Integer.MAX_VALUE));
                         } else {
-                            speed[0] = Integer.MAX_VALUE * btnDirection[1];
-                            speed[1] = Integer.MAX_VALUE * btnDirection[2];
+                            speed[0] = 128 * btnDirection[1];
+                            speed[1] = 128 * btnDirection[2];
+                            b.putInt((int)(btnDirection[1]*Integer.MAX_VALUE));
+                            b.putInt((int)(btnDirection[2]*Integer.MAX_VALUE));
                         }
-                        b.putInt((int)((speed[0]/128.0)*Integer.MAX_VALUE));
-                        b.putInt((int)((speed[1]/128.0)*Integer.MAX_VALUE));
                         try {
                             serialSocket.write(b.array());
                         } catch (IOException e) {
@@ -180,12 +182,12 @@ public class MainActivity extends Activity implements SerialListener {
                         }
                         b.putInt(0);
                         b.putInt(0);
-                        _v.performClick();
                         try {
                             serialSocket.write(b.array());
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                        _v.performClick();
                         break;
                     default:
                         break;
@@ -371,6 +373,15 @@ public class MainActivity extends Activity implements SerialListener {
                 speed[1] = 0;
                 hSpeed.setText(String.valueOf(speed[0]));
                 vSpeed.setText(String.valueOf(speed[1]));
+                ByteBuffer b = ByteBuffer.allocate(9);
+                b.put(MOV);
+                b.putInt(0);
+                b.putInt(0);
+                try {
+                    serialSocket.write(b.array());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }

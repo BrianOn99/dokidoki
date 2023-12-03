@@ -162,16 +162,20 @@ static void normalize_strength(int32_t *x, uint32_t *strength, signed char *dire
 	if (k < 0) {
 		l = -k;
 		*direction = -1;
-	} else {
+	} else if (k > 0) {
 		l = k;
 		*direction = 1;
+	} else {
+		l = k;
+		*direction = 0;
 	}
+
 	*strength = (uint32_t)(SPEED_MAX * l / INT32_MAX);
 }
 
 static void set_pins_rotation(signed char plus_minus, uint32_t strength, struct direction *axis)
 {
-	ets_printf("SET PINS ROT\n");
+	ets_printf("SET PINS ROT %d\n", strength);
 	if (strength == 0)
 		axis->to_quanta = NA_QUANTA;
 
@@ -183,10 +187,8 @@ static void set_pins_rotation(signed char plus_minus, uint32_t strength, struct 
 		ets_printf("SET %d 1\n", axis->in_a);
 		gpio_set_level(axis->in_a, 1);
 		gpio_set_level(axis->in_b, 0);
-	} else {
-		gpio_set_level(axis->in_a, 0);
-		gpio_set_level(axis->in_b, 0);
 	}
+
 	gpio_set_level(HORIZONTAL.en, 1);
 	gpio_set_level(VERTICAL.en, 1);
 
